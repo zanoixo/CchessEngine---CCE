@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define Q 9
-#define K 255
+#define K 127
 #define R 5
 #define N 3
 #define B 3
@@ -41,6 +41,19 @@ void showPosition(chessBoard board){
         for (int x = 0; x < 8; x++){
 
             printf("%c ", board.position[y][x].piece);
+        }
+
+        printf("\n");
+    }
+}
+
+void showValue(chessBoard board){
+
+    for (int y = 0; y < 8; y++){
+
+        for (int x = 0; x < 8; x++){
+
+            printf("%d ", board.position[y][x].value);
         }
 
         printf("\n");
@@ -130,6 +143,7 @@ int main(int argc, char const *argv[]){
 
     chessBoard startingPosition = createPosition("startingPosition.txt");
     showPosition(startingPosition);
+    showValue(startingPosition);
 
     return 0;
 }
