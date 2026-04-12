@@ -113,15 +113,3 @@ void createPosition(char fileName[], ChessBoard *chessBoard)
         squareIndex++;
     }
 }
-
-int main()
-{
-    ChessBoard *chessBoard = initChessBoard();
-
-    char fileName[] = "startingPosition.txt";
-
-    createPosition(fileName, chessBoard);
-    showPosition(chessBoard);
-
-    return 0;
-}

@@ -17,7 +17,8 @@ typedef struct ChessBoard
     uint64_t blackBishops;
     uint64_t blackRooks;
     uint64_t blackQueens;
-    uint64_t blackKing; 
+    uint64_t blackKing;
+    
 }ChessBoard;
 
 void showPosition(const ChessBoard* chessBoard);
