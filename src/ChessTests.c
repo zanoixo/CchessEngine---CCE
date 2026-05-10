@@ -462,6 +462,232 @@ void runAttackTablesTests()
 
     printf("[PASS] ALL ROOK ATTACK TESTS PASSED\n");
 
+    ASSERT_BIT_TABLE(attackTables->bishopMagicHashTable[0].mask,
+    0b00000000ULL << 56 |
+    0b01000000ULL << 48 |
+    0b00100000ULL << 40 |
+    0b00010000ULL << 32 |
+    0b00001000ULL << 24 |
+    0b00000100ULL << 16 |
+    0b00000010ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(attackTables->bishopMagicHashTable[7].mask,
+    0b00000000ULL << 56 |
+    0b00000010ULL << 48 |
+    0b00000100ULL << 40 |
+    0b00001000ULL << 32 |
+    0b00010000ULL << 24 |
+    0b00100000ULL << 16 |
+    0b01000000ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(attackTables->bishopMagicHashTable[27].mask,
+    0b00000000ULL << 56 |
+    0b01000000ULL << 48 |
+    0b00100010ULL << 40 |
+    0b00010100ULL << 32 |
+    0b00000000ULL << 24 |
+    0b00010100ULL << 16 |
+    0b00100010ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(attackTables->bishopMagicHashTable[24].mask,
+    0b00000000ULL << 56 |
+    0b00001000ULL << 48 |
+    0b00000100ULL << 40 |
+    0b00000010ULL << 32 |
+    0b00000000ULL << 24 |
+    0b00000010ULL << 16 |
+    0b00000100ULL << 8  |
+    0b00000000ULL);
+
+    printf("[PASS] ALL BISHOP MASK TESTS PASSED\n");
+
+    emptyBlockers = 0;
+    blockers =  0b00000000ULL << 56 |
+                0b00100100ULL << 48 |
+                0b01000000ULL << 40 |
+                0b00000100ULL << 32 |
+                0b00100000ULL << 24 |
+                0b00000000ULL << 16 |
+                0b01010000ULL << 8  |
+                0b00001000ULL;
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(0, emptyBlockers, attackTables),
+    0b10000000ULL << 56 |
+    0b01000000ULL << 48 |
+    0b00100000ULL << 40 |
+    0b00010000ULL << 32 |
+    0b00001000ULL << 24 |
+    0b00000100ULL << 16 |
+    0b00000010ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(7, emptyBlockers, attackTables),
+    0b00000001ULL << 56 |
+    0b00000010ULL << 48 |
+    0b00000100ULL << 40 |
+    0b00001000ULL << 32 |
+    0b00010000ULL << 24 |
+    0b00100000ULL << 16 |
+    0b01000000ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(56, emptyBlockers, attackTables),
+    0b00000000ULL << 56 |
+    0b00000010ULL << 48 |
+    0b00000100ULL << 40 |
+    0b00001000ULL << 32 |
+    0b00010000ULL << 24 |
+    0b00100000ULL << 16 |
+    0b01000000ULL << 8  |
+    0b10000000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(27, emptyBlockers, attackTables),
+    0b10000000ULL << 56 |
+    0b01000001ULL << 48 |
+    0b00100010ULL << 40 |
+    0b00010100ULL << 32 |
+    0b00000000ULL << 24 |
+    0b00010100ULL << 16 |
+    0b00100010ULL << 8  |
+    0b01000001ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(12, emptyBlockers, attackTables),
+    0b00000000ULL << 56 |
+    0b00000000ULL << 48 |
+    0b00000001ULL << 40 |
+    0b10000010ULL << 32 |
+    0b01000100ULL << 24 |
+    0b00101000ULL << 16 |
+    0b00000000ULL << 8  |
+    0b00101000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(7, blockers, attackTables),
+    0b00000000ULL << 56 |
+    0b00000000ULL << 48 |
+    0b00000000ULL << 40 |
+    0b00000000ULL << 32 |
+    0b00000000ULL << 24 |
+    0b00000000ULL << 16 |
+    0b01000000ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(49, blockers, attackTables),
+    0b00000101ULL << 56 |
+    0b00000000ULL << 48 |
+    0b00000101ULL << 40 |
+    0b00001000ULL << 32 |
+    0b00010000ULL << 24 |
+    0b00100000ULL << 16 |
+    0b01000000ULL << 8  |
+    0b00000000ULL);
+
+    ASSERT_BIT_TABLE(getBishopAttackPattern(13, blockers, attackTables),
+    0b00000000ULL << 56 |
+    0b00000000ULL << 48 |
+    0b00000000ULL << 40 |
+    0b00000100ULL << 32 |
+    0b10001000ULL << 24 |
+    0b01010000ULL << 16 |
+    0b00000000ULL << 8  |
+    0b01010000ULL);
+
+    printf("[PASS] ALL BISHOP ATTACK TESTS PASSED\n");
+
+    emptyBlockers = 0;
+    blockers =  0b00000000ULL << 56 |
+                0b00100100ULL << 48 |
+                0b01000000ULL << 40 |
+                0b00000100ULL << 32 |
+                0b00100000ULL << 24 |
+                0b00000000ULL << 16 |
+                0b01010000ULL << 8  |
+                0b00001000ULL;
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(0, emptyBlockers, attackTables),
+    0b10000001ULL << 56 |
+    0b01000001ULL << 48 |
+    0b00100001ULL << 40 |
+    0b00010001ULL << 32 |
+    0b00001001ULL << 24 |
+    0b00000101ULL << 16 |
+    0b00000011ULL << 8  |
+    0b11111110ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(7, emptyBlockers, attackTables),
+    0b10000001ULL << 56 |
+    0b10000010LL << 48 |
+    0b10000100ULL << 40 |
+    0b10001000ULL << 32 |
+    0b10010000ULL << 24 |
+    0b10100000ULL << 16 |
+    0b11000000ULL << 8  |
+    0b01111111ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(56, emptyBlockers, attackTables),
+    0b11111110ULL << 56 |
+    0b00000011ULL << 48 |
+    0b00000101ULL << 40 |
+    0b00001001ULL << 32 |
+    0b00010001ULL << 24 |
+    0b00100001ULL << 16 |
+    0b01000001ULL << 8  |
+    0b10000001ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(27, emptyBlockers, attackTables),
+    0b10001000ULL << 56 |
+    0b01001001ULL << 48 |
+    0b00101010ULL << 40 |
+    0b00011100ULL << 32 |
+    0b11110111ULL << 24 |
+    0b00011100ULL << 16 |
+    0b00101010ULL << 8  |
+    0b01001001ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(12, emptyBlockers, attackTables),
+    0b00010000ULL << 56 |
+    0b00010000ULL << 48 |
+    0b00010001ULL << 40 |
+    0b10010010ULL << 32 |
+    0b01010100ULL << 24 |
+    0b00111000ULL << 16 |
+    0b11101111ULL << 8  |
+    0b00111000ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(7, blockers, attackTables),
+    0b10000000ULL << 56 |
+    0b10000000ULL << 48 |
+    0b10000000ULL << 40 |
+    0b10000000ULL << 32 |
+    0b10000000ULL << 24 |
+    0b10000000ULL << 16 |
+    0b11000000ULL << 8  |
+    0b01111000ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(49, blockers, attackTables),
+    0b00000111ULL << 56 |
+    0b00000101ULL << 48 |
+    0b00000111ULL << 40 |
+    0b00001010ULL << 32 |
+    0b00010010ULL << 24 |
+    0b00100010ULL << 16 |
+    0b01000010ULL << 8  |
+    0b00000010ULL);
+
+    ASSERT_BIT_TABLE(getQueenAttackPattern(13, blockers, attackTables),
+    0b00000000ULL << 56 |
+    0b00000000ULL << 48 |
+    0b00000000ULL << 40 |
+    0b00000100ULL << 32 |
+    0b10101000ULL << 24 |
+    0b01110000ULL << 16 |
+    0b01010000ULL << 8  |
+    0b01110000ULL);
+
+    printf("[PASS] ALL QUEEN ATTACK TESTS PASSED\n");
+
     free(attackTables);
 
 }
