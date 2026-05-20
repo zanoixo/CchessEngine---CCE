@@ -77,34 +77,37 @@ void createPosition(char fileName[], ChessBoard *chessBoard)
 
         fscanf(positionFile, "%s", piece);
 
+        uint64_t square = 1ULL << squareIndex;
         pieceName = piece[1];
 
         if (piece[0] == 'W')
         {
             switch (pieceName)
             {
-            case 'Q': chessBoard->whiteQueens = chessBoard->whiteQueens | (1ULL << squareIndex); break;
-            case 'R': chessBoard->whiteRooks = chessBoard->whiteRooks | (1ULL << squareIndex); break;
-            case 'N': chessBoard->whiteKnights = chessBoard->whiteKnights | (1ULL << squareIndex); break;
-            case 'B': chessBoard->whiteBishops = chessBoard->whiteBishops | (1ULL << squareIndex); break;
-            case 'P': chessBoard->whitePawns = chessBoard->whitePawns | (1ULL << squareIndex); break;
-            case 'K': chessBoard->whiteKing = chessBoard->whiteKing | (1ULL << squareIndex); break;
+            case 'Q': chessBoard->whiteQueens |= square; break;
+            case 'R': chessBoard->whiteRooks |= square; break;
+            case 'N': chessBoard->whiteKnights |= square; break;
+            case 'B': chessBoard->whiteBishops |= square; break;
+            case 'P': chessBoard->whitePawns |= square; break;
+            case 'K': chessBoard->whiteKing |= square; break;
             default: sendError("Wrong format in file");   
             }
-
+            chessBoard->whitePieces |= square;
         } else if (piece[0] == 'B')
         {
             switch (pieceName)
             {
-            case 'Q': chessBoard->blackQueens = chessBoard->blackQueens | (1ULL << squareIndex); break;
-            case 'R': chessBoard->blackRooks = chessBoard->blackRooks | (1ULL << squareIndex); break;
-            case 'N': chessBoard->blackKnights = chessBoard->blackKnights | (1ULL << squareIndex); break;
-            case 'B': chessBoard->blackBishops = chessBoard->blackBishops | (1ULL << squareIndex); break;
-            case 'P': chessBoard->blackPawns = chessBoard->blackPawns | (1ULL << squareIndex); break;
-            case 'K': chessBoard->blackKing = chessBoard->blackKing | (1ULL << squareIndex); break;
+            case 'Q': chessBoard->blackQueens |= square; break;
+            case 'R': chessBoard->blackRooks |= square; break;
+            case 'N': chessBoard->blackKnights |= square; break;
+            case 'B': chessBoard->blackBishops |= square; break;
+            case 'P': chessBoard->blackPawns |= square; break;
+            case 'K': chessBoard->blackKing |= square; break;
             default: sendError("Wrong format in file");   
             }
+            chessBoard->blackPieces |= square;
         }
         squareIndex++;
     }
+    chessBoard->allPieces = chessBoard->whitePieces | chessBoard->blackPieces;
 }

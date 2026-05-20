@@ -29,9 +29,24 @@ typedef struct AttackTables
     
 }AttackTables;
 
+typedef struct Move
+{
+    uint8_t from;
+    uint8_t to;
+    uint8_t flags;
+}Move;
+
+typedef struct MoveList
+{
+    Move* moves;
+    int nextIndex;
+}MoveList;
+
+
 AttackTables* initAttackTables();
 uint64_t getRookAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
 uint64_t getBishopAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
 uint64_t getQueenAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
+void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList);
 
 #endif

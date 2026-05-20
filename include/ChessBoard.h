@@ -21,7 +21,16 @@ typedef struct ChessBoard
     uint64_t blackQueens;
     uint64_t blackKing;
     
+    uint64_t blackPieces;
+    uint64_t whitePieces;
+    uint64_t allPieces;
+    uint8_t flags;
 }ChessBoard;
+
+enum boardFlags
+{
+    color = 0b00000001
+};
 
 void showPosition(const ChessBoard* chessBoard);
 ChessBoard* initChessBoard();

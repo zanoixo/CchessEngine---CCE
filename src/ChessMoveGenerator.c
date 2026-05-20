@@ -846,6 +846,86 @@ uint64_t getQueenAttackPattern(int sqInd, uint64_t position, AttackTables *attac
     return lineAttacks | diagonalAttacks;
 }
 
+int getNextSq(uint64_t sq)
+{
+    return __builtin_ctzll(sq);
+}
+
+uint8_t isBlack(ChessBoard *chessBoard)
+{
+    return chessBoard->flags & color;
+}
+
+void addMove(uint8_t from, uint8_t to, uint8_t flags, MoveList* moveList)
+{
+    moveList->moves[moveList->nextIndex] = (Move){ from, to, flags };
+    moveList->nextIndex++;
+}
+
+void generateKnight(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
+{
+    uint64_t knightPositions = chessBoard->whiteKnights;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
+
+    if (isBlack(chessBoard))
+    {
+        knightPositions = chessBoard->blackKnights;
+        friendlyPieces = chessBoard->blackPieces;
+    }  
+    
+    while (knightPositions != 0)
+    {
+        uint8_t fromSq =  getNextSq(knightPositions & -knightPositions);
+        uint64_t knightAttacks = attackTables->knightAttacks[fromSq];
+        knightAttacks &= ~friendlyPieces;
+
+        while (knightAttacks != 0)
+        {
+            uint8_t toSq = getNextSq(knightAttacks & -knightAttacks);
+            addMove(fromSq, toSq, 0, moveList);
+            knightAttacks &= knightAttacks - 1;
+        }
+
+        knightPositions &= knightPositions - 1;
+    }
+    
+}
+
+void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+
+}
+
+void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+
+}
+
+void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+
+}
+
+void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+
+}
+
+void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+
+}
+
+void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+{
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    generateKingMoves(chessBoard, attackTables, moveList);
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    generateRookMoves(chessBoard, attackTables, moveList);
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    generatePawnMoves(chessBoard, attackTables, moveList);
+}
+
 AttackTables* initAttackTables()
 {
     AttackTables* attackTables = malloc(sizeof(AttackTables));
