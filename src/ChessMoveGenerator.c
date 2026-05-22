@@ -862,7 +862,7 @@ void addMove(uint8_t from, uint8_t to, uint8_t flags, MoveList* moveList)
     moveList->nextIndex++;
 }
 
-void generateKnight(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
+void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
     uint64_t knightPositions = chessBoard->whiteKnights;
     uint64_t friendlyPieces = chessBoard->whitePieces;
@@ -891,32 +891,32 @@ void generateKnight(ChessBoard *chessBoard, AttackTables *attackTables, MoveList
     
 }
 
-void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
 
 }
 
-void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
 
 }
 
-void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
 
 }
 
-void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
 
 }
 
-void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
 
 }
 
-void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList)
+void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
     generateKnightMoves(chessBoard, attackTables, moveList);
     generateKingMoves(chessBoard, attackTables, moveList);

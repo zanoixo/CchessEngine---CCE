@@ -47,6 +47,7 @@ AttackTables* initAttackTables();
 uint64_t getRookAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
 uint64_t getBishopAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
 uint64_t getQueenAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
-void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move *moveList);
+void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 
 #endif

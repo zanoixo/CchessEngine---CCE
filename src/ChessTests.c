@@ -16,8 +16,22 @@ void ASSERT_BIT_TABLE(uint64_t acctual, uint64_t expected)
     
 }
 
+void ASSERT(int acctual, int expected)
+{
+    if (acctual != expected)
+    {
+        printf("ASSERT FAILED acctual: %d == %d :expected\n", acctual, expected);
+        printf("GOT: \n");
+        printf("EXPECTED: \n");
+        exit(1);
+    }
+    
+}
+
 void runAttackTablesTests()
 {
+    printf("Running attack table tests:\n");
+
     AttackTables* attackTables = initAttackTables();
 
     ASSERT_BIT_TABLE(attackTables->kingAttacks[0],
@@ -692,10 +706,152 @@ void runAttackTablesTests()
 
 }
 
+void runPseudeLegalMovesTests()
+{
+    printf("Running pseudo legal moves test:\n");
+    ChessBoard* chessBoard = initChessBoard();
+    AttackTables* attackTables = initAttackTables();
+    MoveList* moveList = malloc(sizeof(MoveList));
+    moveList->moves = malloc(sizeof(Move) * 64);
+    moveList->nextIndex = 0;
+
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00001000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    generateKnightMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 8);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000001ULL;
+
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 2);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000001ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 2);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000001ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 4);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00011000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 16);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b10000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000001ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 4);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000001ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 8);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00100000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->whiteKnights = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b10000000ULL;
+                               
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 1);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    generateKnightMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 1);
+    
+    printf("[PASS] ALL KNIGH PSEUDO MOVE TESTS PASSED\n");
+
+    
+    free(attackTables);
+    free(chessBoard);
+}
+
 void runAllTests()
 {
     printf("Stating testing:\n");
-    printf("Running attack table tests testing:\n");
 
     runAttackTablesTests();
+    runPseudeLegalMovesTests();
 }

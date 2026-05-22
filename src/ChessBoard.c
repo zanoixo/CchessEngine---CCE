@@ -55,6 +55,11 @@ ChessBoard* initChessBoard()
     chessBoard->blackRooks = 0;
     chessBoard->blackQueens = 0;
     chessBoard->blackKing = 0;
+
+    chessBoard->blackPieces = 0;
+    chessBoard->whitePieces = 0;
+    chessBoard->allPieces = 0;
+    chessBoard->flags = 0;
     
     return chessBoard;
 }
