@@ -49,5 +49,9 @@ uint64_t getBishopAttackPattern(int sqInd, uint64_t position, AttackTables *atta
 uint64_t getQueenAttackPattern(int sqInd, uint64_t position, AttackTables *attackTables);
 void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 
 #endif

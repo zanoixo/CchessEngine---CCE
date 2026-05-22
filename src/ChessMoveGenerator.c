@@ -862,6 +862,29 @@ void addMove(uint8_t from, uint8_t to, uint8_t flags, MoveList* moveList)
     moveList->nextIndex++;
 }
 
+void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
+{
+    uint64_t kingPositions = chessBoard->whiteKing;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
+
+    if (isBlack(chessBoard))
+    {
+        kingPositions = chessBoard->blackKnights;
+        friendlyPieces = chessBoard->blackPieces;
+    }  
+    
+    uint8_t fromSq =  getNextSq(kingPositions & -kingPositions);
+    uint64_t kingAttacks = attackTables->kingAttacks[fromSq];
+    kingAttacks &= ~friendlyPieces;
+
+    while (kingAttacks != 0)
+    {
+        uint8_t toSq = getNextSq(kingAttacks & -kingAttacks);
+        addMove(fromSq, toSq, 0, moveList);
+        kingAttacks &= kingAttacks - 1;
+    }
+}
+
 void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
     uint64_t knightPositions = chessBoard->whiteKnights;
@@ -888,22 +911,62 @@ void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 
         knightPositions &= knightPositions - 1;
     }
-    
-}
-
-void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
-{
-
 }
 
 void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
+    uint64_t bishopPositions = chessBoard->whiteBishops;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
 
+    if (isBlack(chessBoard))
+    {
+        bishopPositions = chessBoard->blackBishops;
+        friendlyPieces = chessBoard->blackPieces;
+    }  
+    
+    while (bishopPositions != 0)
+    {
+        uint8_t fromSq = getNextSq(bishopPositions & -bishopPositions);
+        uint64_t bishopAttacks = getBishopAttackPattern(fromSq, chessBoard->allPieces, attackTables);
+        bishopAttacks &= ~friendlyPieces;
+
+        while (bishopAttacks != 0)
+        {
+            uint8_t toSq = getNextSq(bishopAttacks & -bishopAttacks);
+            addMove(fromSq, toSq, 0, moveList);
+            bishopAttacks &= bishopAttacks - 1;
+        }
+
+        bishopPositions &= bishopPositions - 1;
+    }
 }
 
 void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
+    uint64_t queenPositions = chessBoard->whiteQueens;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
 
+    if (isBlack(chessBoard))
+    {
+        queenPositions = chessBoard->blackQueens;
+        friendlyPieces = chessBoard->blackPieces;
+    }  
+    
+    while (queenPositions != 0)
+    {
+        uint8_t fromSq = getNextSq(queenPositions & -queenPositions);
+        uint64_t queenAttacks = getQueenAttackPattern(fromSq, chessBoard->allPieces, attackTables);
+        queenAttacks &= ~friendlyPieces;
+
+        while (queenAttacks != 0)
+        {
+            uint8_t toSq = getNextSq(queenAttacks & -queenAttacks);
+            addMove(fromSq, toSq, 0, moveList);
+            queenAttacks &= queenAttacks - 1;
+        }
+
+        queenPositions &= queenPositions - 1;
+    }
 }
 
 void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
@@ -913,7 +976,30 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 
 void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
+    uint64_t rookPositions = chessBoard->whiteRooks;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
 
+    if (isBlack(chessBoard))
+    {
+        rookPositions = chessBoard->blackRooks;
+        friendlyPieces = chessBoard->blackPieces;
+    }  
+    
+    while (rookPositions != 0)
+    {
+        uint8_t fromSq = getNextSq(rookPositions & -rookPositions);
+        uint64_t rookAttacks = getRookAttackPattern(fromSq, chessBoard->allPieces, attackTables);
+        rookAttacks &= ~friendlyPieces;
+
+        while (rookAttacks != 0)
+        {
+            uint8_t toSq = getNextSq(rookAttacks & -rookAttacks);
+            addMove(fromSq, toSq, 0, moveList);
+            rookAttacks &= rookAttacks - 1;
+        }
+
+        rookPositions &= rookPositions - 1;
+    }
 }
 
 void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)

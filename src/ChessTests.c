@@ -28,9 +28,16 @@ void ASSERT(int acctual, int expected)
     
 }
 
+void resetPiecePositions(ChessBoard* chessBoard)
+{
+    chessBoard->whitePieces = 0;
+    chessBoard->blackPieces = 0;
+    chessBoard->allPieces = 0;
+}
+
 void runAttackTablesTests()
 {
-    printf("Running attack table tests:\n");
+    printf("\nRunning attack table tests:\n");
 
     AttackTables* attackTables = initAttackTables();
 
@@ -708,7 +715,7 @@ void runAttackTablesTests()
 
 void runPseudeLegalMovesTests()
 {
-    printf("Running pseudo legal moves test:\n");
+    printf("\nRunning pseudo legal moves test:\n");
     ChessBoard* chessBoard = initChessBoard();
     AttackTables* attackTables = initAttackTables();
     MoveList* moveList = malloc(sizeof(MoveList));
@@ -727,19 +734,6 @@ void runPseudeLegalMovesTests()
     generateKnightMoves(chessBoard, attackTables, moveList);
 
     ASSERT(moveList->nextIndex, 8);
-
-    moveList->nextIndex = 0;
-    chessBoard->whiteKnights = 0b00000000ULL << 56 |
-                               0b00000000ULL << 48 |
-                               0b00000000ULL << 40 |
-                               0b00000000ULL << 32 |
-                               0b00000000ULL << 24 |
-                               0b00000000ULL << 16 |
-                               0b00000000ULL << 8  |
-                               0b00000001ULL;
-
-    generateKnightMoves(chessBoard, attackTables, moveList);
-    ASSERT(moveList->nextIndex, 2);
 
     moveList->nextIndex = 0;
     chessBoard->whiteKnights = 0b00000000ULL << 56 |
@@ -843,7 +837,429 @@ void runPseudeLegalMovesTests()
     
     printf("[PASS] ALL KNIGH PSEUDO MOVE TESTS PASSED\n");
 
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKing = 0b00000000ULL << 56 |
+                            0b00000000ULL << 48 |
+                            0b00000000ULL << 40 |
+                            0b00000000ULL << 32 |
+                            0b00001000ULL << 24 |
+                            0b00000000ULL << 16 |
+                            0b00000000ULL << 8  |
+                            0b00000000ULL;
+
+    generateKingMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 8);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKing = 0b00000000ULL << 56 |
+                            0b00000000ULL << 48 |
+                            0b00000000ULL << 40 |
+                            0b00000000ULL << 32 |
+                            0b00000000ULL << 24 |
+                            0b00000000ULL << 16 |
+                            0b00000000ULL << 8  |
+                            0b00000001ULL;
+
+    generateKingMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 3);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteKing = 0b00000000ULL << 56 |
+                            0b00000000ULL << 48 |
+                            0b00000000ULL << 40 |
+                            0b00000000ULL << 32 |
+                            0b00000000ULL << 24 |
+                            0b00000001ULL << 16 |
+                            0b00000000ULL << 8  |
+                            0b00000000ULL;
+                               
+    generateKingMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 5);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00100000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->whiteKing = 0b00000000ULL << 56 |
+                            0b00000000ULL << 48 |
+                            0b00000000ULL << 40 |
+                            0b00000000ULL << 32 |
+                            0b00000000ULL << 24 |
+                            0b01000000ULL << 16 |
+                            0b00000000ULL << 8  |
+                            0b00000000ULL;
+                               
+    generateKingMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 7);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    generateKingMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 7);
     
+    printf("[PASS] ALL KING PSEUDO MOVE TESTS PASSED\n");
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00001000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    generateBishopMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 13);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000001ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 7);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000001ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 7);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00011000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 26);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteBishops = 0b00000001ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000001ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 14);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000001ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 14);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00010000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whiteBishops = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b10000000ULL;
+                               
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 2);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b01000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generateBishopMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 1);
+    
+    printf("[PASS] ALL BISHOP PSEUDO MOVE TESTS PASSED\n");
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whiteRooks = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00001000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+
+    generateRookMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 14);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteRooks = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000001ULL;
+                               
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 14);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteRooks = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000001ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+                               
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 14);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteRooks = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00010000ULL << 24 |
+                             0b00001000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+                               
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 28);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteRooks = 0b10000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000001ULL;
+                               
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 28);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00010000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whiteRooks = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00010000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+                               
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 9);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00010000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generateRookMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 8);
+    
+    printf("[PASS] ALL ROOK PSEUDO MOVE TESTS PASSED\n");
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00001000ULL << 24 |
+                              0b00000000ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000000ULL;
+
+    generateQueenMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 27);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00000000ULL << 24 |
+                              0b00000000ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000001ULL;
+                               
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 21);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00000000ULL << 24 |
+                              0b00000001ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000000ULL;
+                               
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 21);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00001000ULL << 24 |
+                              0b00000000ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000001ULL;
+                               
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 48);
+
+    moveList->nextIndex = 0;
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00000000ULL << 24 |
+                              0b00000000ULL << 16 |
+                              0b10000000ULL << 8  |
+                              0b00000001ULL;
+                               
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 42);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00011000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whiteQueens = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b00000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00000000ULL << 24 |
+                              0b00010000ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000000ULL;
+                               
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 16);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00010000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generateQueenMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 15);
+    
+    printf("[PASS] ALL QUEEN PSEUDO MOVE TESTS PASSED\n");
+
+    free(moveList);
     free(attackTables);
     free(chessBoard);
 }
