@@ -29,6 +29,36 @@ typedef struct AttackTables
     
 }AttackTables;
 
+enum PromotionPieces
+{
+    queenPromotion = 0,
+    rookPromotion = 1,
+    bishopPromotion = 2,
+    knightPromotion = 3,
+    numOfPromotionPieces = 4
+};
+
+enum CapturedPiece
+{
+    pawnCaptured = 0,
+    knightCaptured = 1,
+    bishopCaptured = 2,
+    rookCaptured = 3,
+    queenCaptured = 4
+};
+
+enum MoveFlags
+{
+    promotionPieceMask = 0b00000011,
+    capturePieceMask =   0b00011100
+};
+
+enum MoveFlagsPosition
+{
+    promotionFlagPosition = 0,
+    captureFlagPostion = 2
+};
+
 typedef struct Move
 {
     uint8_t from;
@@ -53,5 +83,6 @@ void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 
 #endif

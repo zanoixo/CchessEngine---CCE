@@ -40,6 +40,42 @@ const uint64_t bFile = 0b00000010ULL << 56 |
                        0b00000010ULL << 8  |
                        0b00000010ULL;
 
+const uint64_t line7 = 0b00000000ULL << 56 |
+                       0b11111111ULL << 48 |
+                       0b00000000ULL << 40 |
+                       0b00000000ULL << 32 |
+                       0b00000000ULL << 24 |
+                       0b00000000ULL << 16 |
+                       0b00000000ULL << 8  |
+                       0b00000000ULL;
+
+const uint64_t line2 = 0b00000000ULL << 56 |
+                       0b00000000ULL << 48 |
+                       0b00000000ULL << 40 |
+                       0b00000000ULL << 32 |
+                       0b00000000ULL << 24 |
+                       0b00000000ULL << 16 |
+                       0b11111111ULL << 8  |
+                       0b00000000ULL;
+
+const uint64_t line8 = 0b11111111ULL << 56 |
+                       0b00000000ULL << 48 |
+                       0b00000000ULL << 40 |
+                       0b00000000ULL << 32 |
+                       0b00000000ULL << 24 |
+                       0b00000000ULL << 16 |
+                       0b00000000ULL << 8  |
+                       0b00000000ULL;
+
+const uint64_t line1 = 0b00000000ULL << 56 |
+                       0b00000000ULL << 48 |
+                       0b00000000ULL << 40 |
+                       0b00000000ULL << 32 |
+                       0b00000000ULL << 24 |
+                       0b00000000ULL << 16 |
+                       0b00000000ULL << 8  |
+                       0b11111111ULL;
+
 uint64_t MAX_NUMBER_OF_MAGICS = 10000000;
 
 int attackPatternCounter = 0;
@@ -853,13 +889,22 @@ int getNextSq(uint64_t sq)
 
 uint8_t isBlack(ChessBoard *chessBoard)
 {
-    return chessBoard->flags & color;
+    return chessBoard->flags & colorMask;
 }
 
 void addMove(uint8_t from, uint8_t to, uint8_t flags, MoveList* moveList)
 {
     moveList->moves[moveList->nextIndex] = (Move){ from, to, flags };
     moveList->nextIndex++;
+}
+
+void generatePawnPromotionMoves(uint8_t from, uint8_t to, uint8_t flags, MoveList* moveList)
+{
+    for (int i = 0; i < numOfPromotionPieces; i++)
+    {
+        addMove(from, to, flags + i, moveList);
+    }
+    
 }
 
 void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
@@ -971,7 +1016,79 @@ void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move
 
 void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
+    uint64_t pawnPositions = chessBoard->whitePawns;
+    uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemayPieces = chessBoard->blackPieces;
+    uint64_t *pawnAttackTable = attackTables->whitePanwsAttacks;
 
+    if (isBlack(chessBoard))
+    {
+        pawnPositions = chessBoard->blackPawns;
+        friendlyPieces = chessBoard->blackPieces;
+        enemayPieces = chessBoard->whitePieces;
+        pawnAttackTable = attackTables->blackPanwsAttacks;
+    }  
+    
+    while (pawnPositions != 0)
+    {   
+        uint64_t fromBitBoard = pawnPositions & -pawnPositions;
+        uint64_t fromSq = getNextSq(fromBitBoard);
+        uint64_t pawnAttacks = pawnAttackTable[fromSq];
+
+        if (isBlack(chessBoard))
+        {
+            uint64_t nextSq = fromBitBoard >> 8;
+            if (nextSq & (~chessBoard->allPieces))
+            {
+                if (nextSq & line1)
+                {
+                    generatePawnPromotionMoves(fromSq, getNextSq(nextSq), 0, moveList);
+                }else
+                {
+                    addMove(fromSq, getNextSq(nextSq), 0, moveList);
+                }
+
+                if (fromBitBoard & line7 && ((fromBitBoard >> 16) & (~chessBoard->allPieces)))
+                {
+                    addMove(fromSq, getNextSq(fromBitBoard >> 16), 0, moveList);
+                }
+            }
+                    
+        }else
+        {
+            uint64_t nextSq = fromBitBoard << 8;
+            if (nextSq & (~chessBoard->allPieces))
+            {
+                if (nextSq & line8)
+                {
+                    generatePawnPromotionMoves(fromSq, getNextSq(nextSq), 0, moveList);
+                }else
+                {
+                    addMove(fromSq, getNextSq(nextSq), 0, moveList);
+                }
+
+                if (fromBitBoard & line2 && ((fromBitBoard << 16) & (~chessBoard->allPieces)))
+                {
+                    addMove(fromSq, getNextSq(fromBitBoard << 16), 0, moveList);
+                }
+            } 
+        }
+        
+
+        while (pawnAttacks != 0) //TODO add promotion captures and tests
+        {   
+            uint64_t toSq = pawnAttacks & -pawnAttacks;
+            if (toSq & enemayPieces)
+            {
+                addMove(fromSq, getNextSq(toSq), 0, moveList);
+            }
+            
+            pawnAttacks &= pawnAttacks - 1;
+        }
+
+        pawnPositions &= pawnPositions - 1;
+    }
+    
 }
 
 void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)

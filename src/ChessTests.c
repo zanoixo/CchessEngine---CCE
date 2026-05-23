@@ -1259,6 +1259,273 @@ void runPseudeLegalMovesTests()
     
     printf("[PASS] ALL QUEEN PSEUDO MOVE TESTS PASSED\n");
 
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b10000000ULL << 8  |
+                             0b00000000ULL;
+                               
+    generatePawnMoves(chessBoard, attackTables, moveList);
+    ASSERT(moveList->nextIndex, 0);
+
+    moveList->nextIndex = 0;
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b01000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 1);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b01000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b11100000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 2);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b11111111ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b11111111ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 14);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b01000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b01000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10100000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 3);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b01000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b11100000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 2);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00100000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b01000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b10000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 3);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+    chessBoard->whitePieces  = 0b00000000ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b10101010ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b11111111ULL << 8  |
+                             0b00000000ULL;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 12);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->allPieces |= chessBoard->whitePieces;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b01010101ULL << 16 |
+                             0b10101010ULL << 8  |
+                             0b00000000ULL;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 12);
+
+    printf("[PASS] ALL NORMAL PAWN PSEUDO MOVE TESTS PASSED\n");
+
     free(moveList);
     free(attackTables);
     free(chessBoard);

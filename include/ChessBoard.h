@@ -29,7 +29,7 @@ typedef struct ChessBoard
 
 enum boardFlags
 {
-    color = 0b00000001
+    colorMask = 0b00000001
 };
 
 void showPosition(const ChessBoard* chessBoard);
