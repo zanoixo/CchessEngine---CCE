@@ -1524,6 +1524,66 @@ void runPseudeLegalMovesTests()
 
     ASSERT(moveList->nextIndex, 12);
 
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000001ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 4);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b01010101ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 16);
+
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b01000010ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b00000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->blackPieces  = 0b00100111ULL << 56 |
+                               0b00000000ULL << 48 |
+                               0b00000000ULL << 40 |
+                               0b00000000ULL << 32 |
+                               0b00000000ULL << 24 |
+                               0b00000000ULL << 16 |
+                               0b00000000ULL << 8  |
+                               0b00000000ULL;
+    
+    chessBoard->allPieces |= chessBoard->blackPieces;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 16);
+
     printf("[PASS] ALL NORMAL PAWN PSEUDO MOVE TESTS PASSED\n");
 
     free(moveList);

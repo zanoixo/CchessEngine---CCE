@@ -1017,16 +1017,16 @@ void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move
 void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
 {
     uint64_t pawnPositions = chessBoard->whitePawns;
-    uint64_t friendlyPieces = chessBoard->whitePieces;
-    uint64_t enemayPieces = chessBoard->blackPieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
     uint64_t *pawnAttackTable = attackTables->whitePanwsAttacks;
+    uint64_t promotionLine = line8;
 
     if (isBlack(chessBoard))
     {
         pawnPositions = chessBoard->blackPawns;
-        friendlyPieces = chessBoard->blackPieces;
-        enemayPieces = chessBoard->whitePieces;
+        enemyPieces = chessBoard->whitePieces;
         pawnAttackTable = attackTables->blackPanwsAttacks;
+        promotionLine = line1;
     }  
     
     while (pawnPositions != 0)
@@ -1040,7 +1040,7 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
             uint64_t nextSq = fromBitBoard >> 8;
             if (nextSq & (~chessBoard->allPieces))
             {
-                if (nextSq & line1)
+                if (nextSq & promotionLine)
                 {
                     generatePawnPromotionMoves(fromSq, getNextSq(nextSq), 0, moveList);
                 }else
@@ -1059,7 +1059,7 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
             uint64_t nextSq = fromBitBoard << 8;
             if (nextSq & (~chessBoard->allPieces))
             {
-                if (nextSq & line8)
+                if (nextSq & promotionLine)
                 {
                     generatePawnPromotionMoves(fromSq, getNextSq(nextSq), 0, moveList);
                 }else
@@ -1075,12 +1075,19 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
         }
         
 
-        while (pawnAttacks != 0) //TODO add promotion captures and tests
+        while (pawnAttacks != 0)
         {   
             uint64_t toSq = pawnAttacks & -pawnAttacks;
-            if (toSq & enemayPieces)
+            if (toSq & enemyPieces)
             {
-                addMove(fromSq, getNextSq(toSq), 0, moveList);
+                if (toSq & promotionLine)
+                {
+                    generatePawnPromotionMoves(fromSq, getNextSq(toSq), 0, moveList);
+                }else
+                {
+                    addMove(fromSq, getNextSq(toSq), 0, moveList);
+                }
+                
             }
             
             pawnAttacks &= pawnAttacks - 1;
@@ -1088,7 +1095,6 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 
         pawnPositions &= pawnPositions - 1;
     }
-    
 }
 
 void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList)
