@@ -991,6 +991,51 @@ uint64_t getQueenAttackPattern(int sqInd, uint64_t position, AttackTables *attac
     return lineAttacks | diagonalAttacks;
 }
 
+uint8_t getAttackedPieceFromSquare(uint64_t sq, uint8_t isAttackerBlack, ChessBoard *chessBoard)
+{
+    uint64_t enemyPawns = chessBoard->blackPawns;
+    uint64_t enemyKnights = chessBoard->blackKnights; 
+    uint64_t enemyBishops = chessBoard->blackBishops; 
+    uint64_t enemyRooks = chessBoard->blackRooks; 
+    uint64_t enemyQueens = chessBoard->blackQueens;
+    
+    if (isAttackerBlack)
+    {
+        enemyPawns = chessBoard->whitePawns;
+        enemyKnights = chessBoard->whiteKnights; 
+        enemyBishops = chessBoard->whiteBishops; 
+        enemyRooks = chessBoard->whiteRooks; 
+        enemyQueens = chessBoard->whiteQueens;
+    }
+
+    if (enemyPawns & sq)
+    {
+        return pawnCaptured << captureFlagPostion;
+    }
+    
+    if (enemyKnights & sq)
+    {
+        return knightCaptured << captureFlagPostion;
+    }
+
+    if (enemyBishops & sq)
+    {
+        return bishopCaptured << captureFlagPostion;
+    }
+
+    if (enemyRooks & sq)
+    {
+        return rookCaptured << captureFlagPostion;
+    }
+
+    if (enemyQueens & sq)
+    {
+        return queenCaptured << captureFlagPostion;
+    }
+
+    return 0;
+}
+
 uint8_t getSqInd(uint64_t sq)
 {
     return __builtin_ctzll(sq);
@@ -1094,11 +1139,13 @@ void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 {
     uint64_t kingPositions = chessBoard->whiteKing;
     uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
 
     if (isBlack(chessBoard))
     {
         kingPositions = chessBoard->blackKnights;
         friendlyPieces = chessBoard->blackPieces;
+        enemyPieces = chessBoard->whitePieces;
     }  
     
     uint8_t fromSq =  getSqInd(kingPositions & -kingPositions);
@@ -1107,8 +1154,18 @@ void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 
     while (kingAttacks != 0)
     {
-        uint8_t toSq = getSqInd(kingAttacks & -kingAttacks);
-        addMove(fromSq, toSq, 0, moveList);
+        uint64_t nextKingAttack = kingAttacks & -kingAttacks;
+        uint8_t toSq = getSqInd(nextKingAttack);
+
+        if (nextKingAttack & enemyPieces)
+        {
+            uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextKingAttack, isBlack(chessBoard), chessBoard);
+            addMove(fromSq, toSq, capturedPieceFlag, moveList);    
+        }else
+        {
+            addMove(fromSq, toSq, 0, moveList);
+        }
+        
         kingAttacks &= kingAttacks - 1;
     }
 }
@@ -1117,11 +1174,13 @@ void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 {
     uint64_t knightPositions = chessBoard->whiteKnights;
     uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
 
     if (isBlack(chessBoard))
     {
         knightPositions = chessBoard->blackKnights;
         friendlyPieces = chessBoard->blackPieces;
+        enemyPieces = chessBoard->whitePieces;
     }  
     
     while (knightPositions != 0)
@@ -1132,8 +1191,17 @@ void generateKnightMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 
         while (knightAttacks != 0)
         {
-            uint8_t toSq = getSqInd(knightAttacks & -knightAttacks);
-            addMove(fromSq, toSq, 0, moveList);
+            uint64_t nextKnightAttack = knightAttacks & -knightAttacks;
+            uint8_t toSq = getSqInd(nextKnightAttack);
+            if (nextKnightAttack & enemyPieces)
+            {
+                uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextKnightAttack, isBlack(chessBoard), chessBoard);
+                addMove(fromSq, toSq, capturedPieceFlag, moveList);
+            }else
+            {
+                addMove(fromSq, toSq, 0, moveList);
+            }
+            
             knightAttacks &= knightAttacks - 1;
         }
 
@@ -1145,11 +1213,13 @@ void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 {
     uint64_t bishopPositions = chessBoard->whiteBishops;
     uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
 
     if (isBlack(chessBoard))
     {
         bishopPositions = chessBoard->blackBishops;
         friendlyPieces = chessBoard->blackPieces;
+        enemyPieces = chessBoard->whitePieces;
     }  
     
     while (bishopPositions != 0)
@@ -1160,8 +1230,17 @@ void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 
         while (bishopAttacks != 0)
         {
-            uint8_t toSq = getSqInd(bishopAttacks & -bishopAttacks);
-            addMove(fromSq, toSq, 0, moveList);
+            uint8_t nextBishopAttack = bishopAttacks & -bishopAttacks;
+            uint8_t toSq = getSqInd(nextBishopAttack);
+            if (nextBishopAttack & enemyPieces)
+            {
+                uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextBishopAttack, isBlack(chessBoard), chessBoard);
+                addMove(fromSq, toSq, capturedPieceFlag, moveList);
+            }else
+            {
+                addMove(fromSq, toSq, 0, moveList);
+            }
+            
             bishopAttacks &= bishopAttacks - 1;
         }
 
@@ -1173,11 +1252,13 @@ void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move
 {
     uint64_t queenPositions = chessBoard->whiteQueens;
     uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
 
     if (isBlack(chessBoard))
     {
         queenPositions = chessBoard->blackQueens;
         friendlyPieces = chessBoard->blackPieces;
+        enemyPieces = chessBoard->whitePieces;
     }  
     
     while (queenPositions != 0)
@@ -1188,8 +1269,17 @@ void generateQueenMoves(ChessBoard *chessBoard, AttackTables *attackTables, Move
 
         while (queenAttacks != 0)
         {
-            uint8_t toSq = getSqInd(queenAttacks & -queenAttacks);
-            addMove(fromSq, toSq, 0, moveList);
+            uint64_t nextQueenAttack = queenAttacks & -queenAttacks;
+            uint8_t toSq = getSqInd(nextQueenAttack);
+            if (nextQueenAttack & enemyPieces)
+            {
+                uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextQueenAttack, isBlack(chessBoard), chessBoard);
+                addMove(fromSq, toSq, capturedPieceFlag, moveList);
+            }else
+            {
+                addMove(fromSq, toSq, 0, moveList);
+            }
+            
             queenAttacks &= queenAttacks - 1;
         }
 
@@ -1216,7 +1306,6 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
     {   
         uint64_t fromBitBoard = pawnPositions & -pawnPositions;
         uint64_t fromSq = getSqInd(fromBitBoard);
-        uint64_t pawnAttacks = pawnAttackTable[fromSq];
 
         if (isBlack(chessBoard))
         {
@@ -1257,18 +1346,22 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
             } 
         }
         
+        uint64_t pawnAttacks = pawnAttackTable[fromSq];
 
         while (pawnAttacks != 0)
         {   
-            uint64_t toSq = pawnAttacks & -pawnAttacks;
-            if (toSq & enemyPieces)
+            uint64_t nextPawnAttack = pawnAttacks & -pawnAttacks;
+            uint8_t toSq = getSqInd(toSq);
+
+            if (nextPawnAttack & enemyPieces)
             {
-                if (toSq & promotionLine)
+                uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextPawnAttack, isBlack(chessBoard), chessBoard);
+                if (nextPawnAttack & promotionLine)
                 {
-                    generatePawnPromotionMoves(fromSq, getSqInd(toSq), 0, moveList);
+                    generatePawnPromotionMoves(fromSq, toSq, capturedPieceFlag, moveList);
                 }else
                 {
-                    addMove(fromSq, getSqInd(toSq), 0, moveList);
+                    addMove(fromSq, toSq, capturedPieceFlag, moveList);
                 }
                 
             }
@@ -1284,11 +1377,13 @@ void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 {
     uint64_t rookPositions = chessBoard->whiteRooks;
     uint64_t friendlyPieces = chessBoard->whitePieces;
+    uint64_t enemyPieces = chessBoard->blackPieces;
 
     if (isBlack(chessBoard))
     {
         rookPositions = chessBoard->blackRooks;
         friendlyPieces = chessBoard->blackPieces;
+        enemyPieces = chessBoard->whitePieces;
     }  
     
     while (rookPositions != 0)
@@ -1299,8 +1394,17 @@ void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 
         while (rookAttacks != 0)
         {
-            uint8_t toSq = getSqInd(rookAttacks & -rookAttacks);
-            addMove(fromSq, toSq, 0, moveList);
+            uint64_t nextRookAttack = rookAttacks & -rookAttacks;
+            uint8_t toSq = getSqInd(nextRookAttack);
+            if (nextRookAttack & enemyPieces)
+            {
+                uint8_t capturedPieceFlag = getAttackedPieceFromSquare(nextRookAttack, isBlack(chessBoard), chessBoard);
+                addMove(fromSq, toSq, capturedPieceFlag, moveList);
+            }else
+            {
+                addMove(fromSq, toSq, 0, moveList);   
+            } 
+            
             rookAttacks &= rookAttacks - 1;
         }
 

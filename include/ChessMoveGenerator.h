@@ -40,11 +40,11 @@ enum PromotionPieces
 
 enum CapturedPiece
 {
-    pawnCaptured = 0,
-    knightCaptured = 1,
-    bishopCaptured = 2,
-    rookCaptured = 3,
-    queenCaptured = 4
+    pawnCaptured = 1,
+    knightCaptured = 2,
+    bishopCaptured = 3,
+    rookCaptured = 4,
+    queenCaptured = 5
 };
 
 enum MoveFlags

@@ -24,6 +24,7 @@ typedef struct ChessBoard
     uint64_t blackPieces;
     uint64_t whitePieces;
     uint64_t allPieces;
+    uint64_t enPassantPawn;
     uint8_t flags;
 }ChessBoard;
 
