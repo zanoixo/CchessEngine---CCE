@@ -59,6 +59,7 @@ ChessBoard* initChessBoard()
     chessBoard->blackPieces = 0;
     chessBoard->whitePieces = 0;
     chessBoard->allPieces = 0;
+    chessBoard->enPassantSq = 0;
     chessBoard->flags = 0;
     
     return chessBoard;

@@ -1584,7 +1584,57 @@ void runPseudeLegalMovesTests()
 
     ASSERT(moveList->nextIndex, 16);
 
-    printf("[PASS] ALL NORMAL PAWN PSEUDO MOVE TESTS PASSED\n");
+    resetPiecePositions(chessBoard);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b10000000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+
+    chessBoard->enPassantSq = 0b00000000ULL << 56 |
+                              0b00000000ULL << 48 |
+                              0b01000000ULL << 40 |
+                              0b00000000ULL << 32 |
+                              0b00000000ULL << 24 |
+                              0b00000000ULL << 16 |
+                              0b00000000ULL << 8  |
+                              0b00000000ULL;
+        
+    chessBoard->allPieces = 0b00000000ULL << 56 |
+                            0b00000000ULL << 48 |
+                            0b10100000ULL << 40 |
+                            0b00000000ULL << 32 |
+                            0b00000000ULL << 24 |
+                            0b00000000ULL << 16 |
+                            0b00000000ULL << 8  |
+                            0b00000000ULL;
+
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 1);
+
+    moveList->nextIndex = 0;
+
+    chessBoard->whitePawns = 0b00000000ULL << 56 |
+                             0b00000000ULL << 48 |
+                             0b00000000ULL << 40 |
+                             0b10100000ULL << 32 |
+                             0b00000000ULL << 24 |
+                             0b00000000ULL << 16 |
+                             0b00000000ULL << 8  |
+                             0b00000000ULL;
+            
+    generatePawnMoves(chessBoard, attackTables, moveList);
+
+    ASSERT(moveList->nextIndex, 2);
+
+    printf("[PASS] ALL PAWN PSEUDO MOVE TESTS PASSED\n");
 
     resetPiecePositions(chessBoard);
 

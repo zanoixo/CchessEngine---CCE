@@ -51,7 +51,8 @@ enum MoveFlags
 {
     promotionPieceMask = 0b00000011,
     capturePieceMask =   0b00011100,
-    castleMask =         0b00100000
+    castleMask =         0b00100000,
+    enPassantMask =      0b01000000
 };
 
 enum MoveFlagsPosition
@@ -59,6 +60,7 @@ enum MoveFlagsPosition
     promotionFlagPosition = 0,
     captureFlagPostion = 2,
     castleFlagPostion = 5,
+    enPassantFlagPosition = 6
 };
 
 typedef struct Move

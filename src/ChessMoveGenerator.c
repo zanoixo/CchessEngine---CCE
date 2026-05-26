@@ -1143,7 +1143,7 @@ void generateKingMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
 
     if (isBlack(chessBoard))
     {
-        kingPositions = chessBoard->blackKnights;
+        kingPositions = chessBoard->blackKing;
         friendlyPieces = chessBoard->blackPieces;
         enemyPieces = chessBoard->whitePieces;
     }  
@@ -1230,7 +1230,7 @@ void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 
         while (bishopAttacks != 0)
         {
-            uint8_t nextBishopAttack = bishopAttacks & -bishopAttacks;
+            uint64_t nextBishopAttack = bishopAttacks & -bishopAttacks;
             uint8_t toSq = getSqInd(nextBishopAttack);
             if (nextBishopAttack & enemyPieces)
             {
@@ -1305,7 +1305,7 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
     while (pawnPositions != 0)
     {   
         uint64_t fromBitBoard = pawnPositions & -pawnPositions;
-        uint64_t fromSq = getSqInd(fromBitBoard);
+        uint8_t fromSq = getSqInd(fromBitBoard);
 
         if (isBlack(chessBoard))
         {
@@ -1351,7 +1351,7 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
         while (pawnAttacks != 0)
         {   
             uint64_t nextPawnAttack = pawnAttacks & -pawnAttacks;
-            uint8_t toSq = getSqInd(toSq);
+            uint8_t toSq = getSqInd(nextPawnAttack);
 
             if (nextPawnAttack & enemyPieces)
             {
@@ -1363,7 +1363,13 @@ void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveL
                 {
                     addMove(fromSq, toSq, capturedPieceFlag, moveList);
                 }
-                
+                 
+            }
+
+            if (chessBoard->enPassantSq & nextPawnAttack)
+            {
+                uint8_t flags = (pawnCaptured << captureFlagPostion) | (1 << enPassantFlagPosition);
+                addMove(fromSq, toSq, flags, moveList);
             }
             
             pawnAttacks &= pawnAttacks - 1;
