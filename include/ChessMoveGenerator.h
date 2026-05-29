@@ -38,15 +38,6 @@ enum PromotionPieces
     numOfPromotionPieces = 4
 };
 
-enum CapturedPiece
-{
-    pawnCaptured = 1,
-    knightCaptured = 2,
-    bishopCaptured = 3,
-    rookCaptured = 4,
-    queenCaptured = 5
-};
-
 enum MoveFlags
 {
     promotionPieceMask = 0b00000011,
@@ -65,8 +56,8 @@ enum MoveFlagsPosition
 
 typedef struct Move
 {
-    uint8_t from;
-    uint8_t to;
+    uint64_t from;
+    uint64_t to;
     uint8_t flags;
 }Move;
 

@@ -6,13 +6,12 @@
 
 enum Piece
 {
-    pawn = 0,
-    knight = 1,
-    bishop = 2,
-    rook = 3,
-    queen = 4,
-    king = 5,
-
+    pawn = 1,
+    knight = 2,
+    bishop = 3,
+    rook = 4,
+    queen = 5,
+    king = 6
 };
 
 void showBitBoard(uint64_t bitBoard);
