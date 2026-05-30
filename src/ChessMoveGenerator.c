@@ -94,6 +94,15 @@ const uint64_t e8 = 0b00010000ULL << 56 |
                     0b00000000ULL << 8  |
                     0b00000000ULL;
 
+const uint64_t a1 = 0b00000000ULL << 56 |
+                    0b00000000ULL << 48 |
+                    0b00000000ULL << 40 |
+                    0b00000000ULL << 32 |
+                    0b00000000ULL << 24 |
+                    0b00000000ULL << 16 |
+                    0b00000000ULL << 8  |
+                    0b00000001ULL; 
+
 const uint64_t b1 = 0b00000000ULL << 56 |
                     0b00000000ULL << 48 |
                     0b00000000ULL << 40 |
@@ -137,7 +146,25 @@ const uint64_t g1 = 0b00000000ULL << 56 |
                     0b00000000ULL << 24 |
                     0b00000000ULL << 16 |
                     0b00000000ULL << 8  |
-                    0b01000000ULL; 
+                    0b01000000ULL;
+                    
+const uint64_t h1 = 0b00000000ULL << 56 |
+                    0b00000000ULL << 48 |
+                    0b00000000ULL << 40 |
+                    0b00000000ULL << 32 |
+                    0b00000000ULL << 24 |
+                    0b00000000ULL << 16 |
+                    0b00000000ULL << 8  |
+                    0b10000000ULL; 
+
+const uint64_t a8 = 0b00000001ULL << 56 |
+                    0b00000000ULL << 48 |
+                    0b00000000ULL << 40 |
+                    0b00000000ULL << 32 |
+                    0b00000000ULL << 24 |
+                    0b00000000ULL << 16 |
+                    0b00000000ULL << 8  |
+                    0b00000000ULL; 
 
 const uint64_t b8 = 0b00000010ULL << 56 |
                     0b00000000ULL << 48 |
@@ -176,6 +203,15 @@ const uint64_t f8 = 0b00100000ULL << 56 |
                     0b00000000ULL; 
 
 const uint64_t g8 = 0b01000000ULL << 56 |
+                    0b00000000ULL << 48 |
+                    0b00000000ULL << 40 |
+                    0b00000000ULL << 32 |
+                    0b00000000ULL << 24 |
+                    0b00000000ULL << 16 |
+                    0b00000000ULL << 8  |
+                    0b00000000ULL;
+                
+const uint64_t h8 = 0b10000000ULL << 56 |
                     0b00000000ULL << 48 |
                     0b00000000ULL << 40 |
                     0b00000000ULL << 32 |
@@ -1044,6 +1080,11 @@ uint8_t getPieceFromSquare(uint64_t sq, uint8_t isBlack, ChessBoard *chessBoard)
     return 0;
 }
 
+uint8_t getCapturedPiece(uint8_t flags)
+{
+    return (flags & capturePieceMask) >> captureFlagPostion;
+}
+
 uint8_t getSqInd(uint64_t sq)
 {
     return __builtin_ctzll(sq);
@@ -1492,293 +1533,994 @@ void generateMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList 
 void makeKnightMove(ChessBoard *chessBoard, Move move)
 {
     uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
 
     if (isBlacksMove)
+    {
+        chessBoard->blackKnights &= ~move.from;
+        chessBoard->blackKnights |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
         {
-            chessBoard->blackKnights &= ~move.from;
-            chessBoard->blackKnights |= move.to;
-            chessBoard->blackPieces &= ~move.from;
-            chessBoard->blackPieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-        
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->whitePawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->whiteKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->whiteBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->whiteRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->whiteQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->whitePieces &= ~move.to;
-        }else
-        {
-            chessBoard->whiteKnights &= ~move.from;
-            chessBoard->whiteKnights |= move.to;
-            chessBoard->whitePieces &= ~move.from;
-            chessBoard->whitePieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->blackPawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->blackKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->blackBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->blackRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->blackQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->blackPieces &= ~move.to;
+            case pawn:
+                chessBoard->whitePawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~move.to;
+                break;
+            case 0:
+                break;
         }
+
+        chessBoard->whitePieces &= ~move.to;
+    }else
+    {
+        chessBoard->whiteKnights &= ~move.from;
+        chessBoard->whiteKnights |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~move.to;
+    }
 }
 
 void makeBishopMove(ChessBoard *chessBoard, Move move)
 {
     uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
 
     if (isBlacksMove)
+    {
+        chessBoard->blackBishops &= ~move.from;
+        chessBoard->blackBishops |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
         {
-            chessBoard->blackBishops &= ~move.from;
-            chessBoard->blackBishops |= move.to;
-            chessBoard->blackPieces &= ~move.from;
-            chessBoard->blackPieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->whitePawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->whiteKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->whiteBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->whiteRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->whiteQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->whitePieces &= ~move.to;
-        }else
-        {
-            chessBoard->whiteBishops &= ~move.from;
-            chessBoard->whiteBishops |= move.to;
-            chessBoard->whitePieces &= ~move.from;
-            chessBoard->whitePieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->blackPawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->blackKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->blackBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->blackRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->blackQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->blackPieces &= ~move.to;
+            case pawn:
+                chessBoard->whitePawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~move.to;
+                break;
+            case 0:
+                break;
         }
+
+        chessBoard->whitePieces &= ~move.to;
+    }else
+    {
+        chessBoard->whiteBishops &= ~move.from;
+        chessBoard->whiteBishops |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~move.to;
+    }
 }
 
 void makeRookMove(ChessBoard *chessBoard, Move move)
 {
     uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
 
     if (isBlacksMove)
+    {
+        chessBoard->blackRooks &= ~move.from;
+        chessBoard->blackRooks |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
         {
-            chessBoard->blackRooks &= ~move.from;
-            chessBoard->blackRooks |= move.to;
-            chessBoard->blackPieces &= ~move.from;
-            chessBoard->blackPieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->whitePawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->whiteKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->whiteBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->whiteRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->whiteQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->whitePieces &= ~move.to;
-        }else
-        {
-            chessBoard->whiteRooks &= ~move.from;
-            chessBoard->whiteRooks |= move.to;
-            chessBoard->whitePieces &= ~move.from;
-            chessBoard->whitePieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->blackPawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->blackKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->blackBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->blackRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->blackQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->blackPieces &= ~move.to;
+            case pawn:
+                chessBoard->whitePawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~move.to;
+                break;
+            case 0:
+                break;
         }
+
+        chessBoard->whitePieces &= ~move.to;
+    }else
+    {
+        chessBoard->whiteRooks &= ~move.from;
+        chessBoard->whiteRooks |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~move.to;
+    }
 }
 
 void makeQueenMove(ChessBoard *chessBoard, Move move)
 {
     uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
 
     if (isBlacksMove)
+    {
+        chessBoard->blackQueens &= ~move.from;
+        chessBoard->blackQueens |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
         {
-            chessBoard->blackQueens &= ~move.from;
-            chessBoard->blackQueens |= move.to;
-            chessBoard->blackPieces &= ~move.from;
-            chessBoard->blackPieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->whitePawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->whiteKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->whiteBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->whiteRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->whiteQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->whitePieces &= ~move.to;
-        }else
-        {
-            chessBoard->whiteQueens &= ~move.from;
-            chessBoard->whiteQueens |= move.to;
-            chessBoard->whitePieces &= ~move.from;
-            chessBoard->whitePieces |= move.to;
-            chessBoard->allPieces &= ~move.from;
-            chessBoard->allPieces |= move.to;
-
-            uint8_t capture = getPieceFromSquare(move.to, !isBlacksMove, chessBoard);
-
-            switch (capture)
-            {
-                case pawn:
-                    chessBoard->blackPawns &= ~move.to;
-                    break;
-                case knight:
-                    chessBoard->blackKnights &= ~move.to;
-                    break;
-                case bishop:
-                    chessBoard->blackBishops &= ~move.to;
-                    break;
-                case rook:
-                    chessBoard->blackRooks &= ~move.to;
-                    break;
-                case queen:
-                    chessBoard->blackQueens &= ~move.to;
-                    break;
-                case 0:
-                    break;
-            }
-
-            chessBoard->blackPieces &= ~move.to;
+            case pawn:
+                chessBoard->whitePawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~move.to;
+                break;
+            case 0:
+                break;
         }
+
+        chessBoard->whitePieces &= ~move.to;
+    }else
+    {
+        chessBoard->whiteQueens &= ~move.from;
+        chessBoard->whiteQueens |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~move.to;
+    }
+}
+
+void makeKingMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackKing &= ~move.from;
+        chessBoard->blackKing |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces &= ~move.to;
+
+        if (move.from == e8)
+        {
+            if (move.to == g8)
+            {
+                chessBoard->blackRooks &= ~ h8;
+                chessBoard->blackRooks |= f8;
+                chessBoard->blackPieces &= ~h8;
+                chessBoard->blackPieces |= f8;
+                chessBoard->allPieces &= ~h8;
+                chessBoard->allPieces |= f8;
+            }
+
+            if (move.to == c8)
+            {
+                chessBoard->blackRooks &= ~ a8;
+                chessBoard->blackRooks |= d8;
+                chessBoard->blackPieces &= ~a8;
+                chessBoard->blackPieces |= d8;
+                chessBoard->allPieces &= ~a8;
+                chessBoard->allPieces |= d8;
+            }
+        }
+        
+    }else
+    {
+        chessBoard->whiteKing &= ~move.from;
+        chessBoard->whiteKing |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~move.to;
+
+        if (move.from == e1)
+        {
+            if (move.to == g1)
+            {
+                chessBoard->whiteRooks &= ~ h1;
+                chessBoard->whiteRooks |= f1;
+                chessBoard->whitePieces &= ~h1;
+                chessBoard->whitePieces |= f1;
+                chessBoard->allPieces &= ~h1;
+                chessBoard->allPieces |= f1;
+            }
+
+            if (move.to == c1)
+            {
+                chessBoard->whiteRooks &= ~ a1;
+                chessBoard->whiteRooks |= d1;
+                chessBoard->whitePieces &= ~a1;
+                chessBoard->whitePieces |= d1;
+                chessBoard->allPieces &= ~a1;
+                chessBoard->allPieces |= d1;
+            }
+        }
+    }
+}
+
+void makePawnMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+    uint64_t moveTo = move.to;
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackPawns &= ~move.from;
+        chessBoard->blackPawns |= move.to;
+        chessBoard->blackPieces &= ~move.from;
+        chessBoard->blackPieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        if (move.flags & enPassantMask)
+        {
+            moveTo = move.to >> 8;
+            chessBoard->allPieces &= ~moveTo;
+        }
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns &= ~moveTo;
+                break;
+            case knight:
+                chessBoard->whiteKnights &= ~moveTo;
+                break;
+            case bishop:
+                chessBoard->whiteBishops &= ~moveTo;
+                break;
+            case rook:
+                chessBoard->whiteRooks &= ~moveTo;
+                break;
+            case queen:
+                chessBoard->whiteQueens &= ~moveTo;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces &= ~moveTo;
+        
+    }else
+    {
+        chessBoard->whitePawns &= ~move.from;
+        chessBoard->whitePawns |= move.to;
+        chessBoard->whitePieces &= ~move.from;
+        chessBoard->whitePieces |= move.to;
+        chessBoard->allPieces &= ~move.from;
+        chessBoard->allPieces |= move.to;
+
+        if (move.flags & enPassantMask)
+        {
+            moveTo = move.to << 8;
+            chessBoard->allPieces &= ~moveTo;
+        }
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns &= ~moveTo;
+                break;
+            case knight:
+                chessBoard->blackKnights &= ~moveTo;
+                break;
+            case bishop:
+                chessBoard->blackBishops &= ~moveTo;
+                break;
+            case rook:
+                chessBoard->blackRooks &= ~moveTo;
+                break;
+            case queen:
+                chessBoard->blackQueens &= ~moveTo;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces &= ~moveTo;
+    }
+}
+
+void unMakeKnightMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackKnights &= ~move.to;
+        chessBoard->blackKnights |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= move.to;
+    }
+    else
+    {
+        chessBoard->whiteKnights &= ~move.to;
+        chessBoard->whiteKnights |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= move.to;
+    }
+}
+
+void unMakeBishopMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackBishops &= ~move.to;
+        chessBoard->blackBishops |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= move.to;
+    }
+    else
+    {
+        chessBoard->whiteBishops &= ~move.to;
+        chessBoard->whiteBishops |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= move.to;
+    }
+}
+
+void unMakeRookMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackRooks &= ~move.to;
+        chessBoard->blackRooks |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= move.to;
+    }
+    else
+    {
+        chessBoard->whiteRooks &= ~move.to;
+        chessBoard->whiteRooks |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= move.to;
+    }
+}
+
+void unMakeQueenMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackQueens &= ~move.to;
+        chessBoard->blackQueens |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= move.to;
+    }
+    else
+    {
+        chessBoard->whiteQueens &= ~move.to;
+        chessBoard->whiteQueens |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= move.to;
+    }
+}
+
+void unMakeKingMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackKing &= ~move.to;
+        chessBoard->blackKing |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= move.to;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= move.to;
+
+        if (move.from == e8)
+        {
+            if (move.to == g8)
+            {
+                chessBoard->blackRooks &= ~f8;
+                chessBoard->blackRooks |= h8;
+                chessBoard->blackPieces &= ~f8;
+                chessBoard->blackPieces |= h8;
+                chessBoard->allPieces &= ~f8;
+                chessBoard->allPieces |= h8;
+            }
+
+            if (move.to == c8)
+            {
+                chessBoard->blackRooks &= ~d8;
+                chessBoard->blackRooks |= a8;
+                chessBoard->blackPieces &= ~d8;
+                chessBoard->blackPieces |= a8;
+                chessBoard->allPieces &= ~d8;
+                chessBoard->allPieces |= a8;
+            }
+        }
+    }
+    else
+    {
+        chessBoard->whiteKing &= ~move.to;
+        chessBoard->whiteKing |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= move.to;
+                break;
+            case knight:
+                chessBoard->blackKnights |= move.to;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= move.to;
+                break;
+            case rook:
+                chessBoard->blackRooks |= move.to;
+                break;
+            case queen:
+                chessBoard->blackQueens |= move.to;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= move.to;
+
+        if (move.from == e1)
+        {
+            if (move.to == g1)
+            {
+                chessBoard->whiteRooks &= ~f1;
+                chessBoard->whiteRooks |= h1;
+                chessBoard->whitePieces &= ~f1;
+                chessBoard->whitePieces |= h1;
+                chessBoard->allPieces &= ~f1;
+                chessBoard->allPieces |= h1;
+            }
+
+            if (move.to == c1)
+            {
+                chessBoard->whiteRooks &= ~d1;
+                chessBoard->whiteRooks |= a1;
+                chessBoard->whitePieces &= ~d1;
+                chessBoard->whitePieces |= a1;
+                chessBoard->allPieces &= ~d1;
+                chessBoard->allPieces |= a1;
+            }
+        }
+    }
+}
+
+void unMakePawnMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t isBlacksMove = isBlack(chessBoard);
+    uint8_t capture = getCapturedPiece(move.flags);
+    uint64_t moveTo = move.to;
+
+    if (isBlacksMove)
+    {
+        chessBoard->blackPawns &= ~move.to;
+        chessBoard->blackPawns |= move.from;
+        chessBoard->blackPieces &= ~move.to;
+        chessBoard->blackPieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        if (move.flags & enPassantMask)
+        {
+            moveTo = move.to >> 8;
+            chessBoard->allPieces |= moveTo;
+        }
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->whitePawns |= moveTo;
+                break;
+            case knight:
+                chessBoard->whiteKnights |= moveTo;
+                break;
+            case bishop:
+                chessBoard->whiteBishops |= moveTo;
+                break;
+            case rook:
+                chessBoard->whiteRooks |= moveTo;
+                break;
+            case queen:
+                chessBoard->whiteQueens |= moveTo;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->whitePieces |= moveTo;
+    }
+    else
+    {
+        chessBoard->whitePawns &= ~move.to;
+        chessBoard->whitePawns |= move.from;
+        chessBoard->whitePieces &= ~move.to;
+        chessBoard->whitePieces |= move.from;
+        chessBoard->allPieces &= ~move.to;
+        chessBoard->allPieces |= move.from;
+
+        if (move.flags & enPassantMask)
+        {
+            moveTo = move.to << 8;
+            chessBoard->allPieces |= moveTo;
+        }
+
+        switch (capture)
+        {
+            case pawn:
+                chessBoard->blackPawns |= moveTo;
+                break;
+            case knight:
+                chessBoard->blackKnights |= moveTo;
+                break;
+            case bishop:
+                chessBoard->blackBishops |= moveTo;
+                break;
+            case rook:
+                chessBoard->blackRooks |= moveTo;
+                break;
+            case queen:
+                chessBoard->blackQueens |= moveTo;
+                break;
+            case 0:
+                break;
+        }
+
+        chessBoard->blackPieces |= moveTo;
+    }
+}
+
+void unMakeMove(ChessBoard *chessBoard, Move move)
+{
+    uint8_t piece = getPieceFromSquare(move.to, isBlack(chessBoard), chessBoard);
+
+    switch (piece)
+    {
+        case pawn:
+            unMakePawnMove(chessBoard, move);
+            break;
+        case knight:
+            unMakeKnightMove(chessBoard, move);
+            break;
+        case bishop:
+            unMakeBishopMove(chessBoard, move);
+            break;
+        case rook:
+            unMakeRookMove(chessBoard, move);
+            break;
+        case queen:
+            unMakeQueenMove(chessBoard, move);
+            break;
+        case king:
+            unMakeKingMove(chessBoard, move);
+            break;
+    }
 }
 
 void makeMove(ChessBoard *chessBoard, Move move)
@@ -1788,6 +2530,7 @@ void makeMove(ChessBoard *chessBoard, Move move)
     switch (piece)
     {
         case pawn:
+            makePawnMove(chessBoard, move);
             break;
         case knight:
             makeKnightMove(chessBoard, move);
@@ -1802,6 +2545,7 @@ void makeMove(ChessBoard *chessBoard, Move move)
             makeQueenMove(chessBoard, move);
             break;
         case king:
+            makeKingMove(chessBoard, move);
             break;
     }
 }
