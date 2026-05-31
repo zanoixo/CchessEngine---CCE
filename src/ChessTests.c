@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
 
@@ -26,6 +27,159 @@ void ASSERT(int acctual, int expected)
         exit(1);
     }
     
+}
+
+void ASSERT_CHESS_BOARD(ChessBoard *original, ChessBoard *modified)
+{
+    if (original->allPieces != modified->allPieces)
+    {
+        printf("ALL PIECES ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->allPieces);
+        printf("GOT: \n");
+        showBitBoard(modified->allPieces);
+        exit(1);
+    }
+
+    if (original->blackPieces != modified->blackPieces)
+    {
+        printf("BLACK PIECES ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackPieces);
+        printf("GOT: \n");
+        showBitBoard(modified->blackPieces);
+        exit(1);
+    }
+
+    if (original->blackPawns != modified->blackPawns)
+    {
+        printf("BLACK PAWNS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackPawns);
+        printf("GOT: \n");
+        showBitBoard(modified->blackPawns);
+        exit(1);
+    }
+
+    if (original->blackKnights != modified->blackKnights)
+    {
+        printf("BLACK KNIGHTS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackKnights);
+        printf("GOT: \n");
+        showBitBoard(modified->blackKnights);
+        exit(1);
+    }
+    
+    if (original->blackBishops != modified->blackBishops)
+    {
+        printf("BLACK BISHOPS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackBishops);
+        printf("GOT: \n");
+        showBitBoard(modified->blackBishops);
+        exit(1);
+    }
+
+    if (original->blackRooks != modified->blackRooks)
+    {
+        printf("BLACK ROOKS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackRooks);
+        printf("GOT: \n");
+        showBitBoard(modified->blackRooks);
+        exit(1);
+    }
+
+    if (original->blackQueens != modified->blackQueens)
+    {
+        printf("BLACK QUEENS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackQueens);
+        printf("GOT: \n");
+        showBitBoard(modified->blackQueens);
+        exit(1);
+    }
+
+    if (original->blackKing != modified->blackKing)
+    {
+        printf("BlACK KING ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->blackKing);
+        printf("GOT: \n");
+        showBitBoard(modified->blackKing);
+        exit(1);
+    }
+
+    if (original->whitePieces != modified->whitePieces)
+    {
+        printf("WHITE PIECES ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whitePieces);
+        printf("GOT: \n");
+        showBitBoard(modified->whitePieces);
+        exit(1);
+    }
+
+    if (original->whitePawns != modified->whitePawns)
+    {
+        printf("WHITE PAWNS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whitePawns);
+        printf("GOT: \n");
+        showBitBoard(modified->whitePawns);
+        exit(1);
+    }
+
+    if (original->whiteKnights != modified->whiteKnights)
+    {
+        printf("WHITE KNIGHTS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteKnights);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteKnights);
+        exit(1);
+    }
+
+    if (original->whiteBishops != modified->whiteBishops)
+    {
+        printf("WHITE BISHOPS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteBishops);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteBishops);
+        exit(1);
+    }
+
+    if (original->whiteRooks != modified->whiteRooks)
+    {
+        printf("WHITE ROOKS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteRooks);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteRooks);
+        exit(1);
+    }
+
+    if (original->whiteQueens != modified->whiteQueens)
+    {
+        printf("WHITE QUEENS ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteQueens);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteQueens);
+        exit(1);
+    }
+
+    if (original->whiteKing != modified->whiteKing)
+    {
+        printf("WHITE KING ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteKing);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteKing);
+        exit(1);
+    }
 }
 
 void resetPiecePositions(ChessBoard* chessBoard)
@@ -1747,10 +1901,56 @@ void runPseudeLegalMovesTests()
     free(chessBoard);
 }
 
+void generatePositions(ChessBoard *chessBoard, AttackTables *attackTables, int depth)
+{
+    if (depth == 0)
+    {
+        return;
+    }
+    
+    MoveList* moveList = malloc(sizeof(MoveList));
+    moveList->moves = malloc(sizeof(Move) * 256);
+    moveList->nextIndex = 0;
+
+    ChessBoard* chessBoardOriginal = malloc(sizeof(ChessBoard));
+
+    memcpy(chessBoardOriginal, chessBoard, sizeof(ChessBoard));
+
+    generateMoves(chessBoard, attackTables, moveList);
+
+    for (int i = 0; i < moveList->nextIndex; i++)
+    {
+        makeMove(chessBoard, &moveList->moves[i]);
+        generatePositions(chessBoard, attackTables, depth - 1);
+        unMakeMove(chessBoard, &moveList->moves[i]);
+
+        ASSERT_CHESS_BOARD(chessBoardOriginal, chessBoard);
+
+    }
+    free(chessBoardOriginal);
+    free(moveList->moves);
+    free(moveList);
+}
+
+void runMakeMoveTests()
+{
+    printf("\nRunning make moves test:\n");
+    ChessBoard* chessBoard = initChessBoard();
+    AttackTables* attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+
+    generatePositions(chessBoard, attackTables, 5);
+
+    free(attackTables);
+    free(chessBoard);
+}
+
 void runAllTests()
 {
     printf("Stating testing:\n");
 
     runAttackTablesTests();
     runPseudeLegalMovesTests();
+    runMakeMoveTests();
 }

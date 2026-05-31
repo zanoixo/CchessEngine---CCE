@@ -86,5 +86,7 @@ void generateBishopMoves(ChessBoard *chessBoard, AttackTables *attackTables, Mov
 void generateRookMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 void generatePawnMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
 void generateCastleMoves(ChessBoard *chessBoard, AttackTables *attackTables, MoveList *moveList);
+void makeMove(ChessBoard *chessBoard, Move *move);
+void unMakeMove(ChessBoard *chessBoard, Move *move);
 
 #endif
