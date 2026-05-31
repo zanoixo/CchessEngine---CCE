@@ -2179,6 +2179,11 @@ void makePawnMove(ChessBoard *chessBoard, Move *move)
                 break;
         }
         
+        if ((move->from >> 16) == move->to)
+        {
+            chessBoard->enPassantSq = move->from >> 8;
+        }
+        
         
     }else
     {
@@ -2250,6 +2255,11 @@ void makePawnMove(ChessBoard *chessBoard, Move *move)
                 break;
             case 0:
                 break;
+        }
+
+        if ((move->from << 16) == move->to)
+        {
+            chessBoard->enPassantSq = move->from << 8;
         }
     }
 }
@@ -2988,6 +2998,7 @@ void unMakeMove(ChessBoard *chessBoard, Move *move)
 void makeMove(ChessBoard *chessBoard, Move *move)
 {
     uint8_t piece = getPieceFromSquare(move->from, isBlack(chessBoard), chessBoard);
+    chessBoard->enPassantSq = 0;
 
     switch (piece)
     {
