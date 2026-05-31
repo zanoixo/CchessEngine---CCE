@@ -1732,6 +1732,18 @@ void makeRookMove(ChessBoard *chessBoard, Move *move)
         chessBoard->allPieces &= ~move->from;
         chessBoard->allPieces |= move->to;
 
+        if (move->from == h8 && canBlackShortCastle(chessBoard))
+        {
+            chessBoard->flags &= ~blackShortCastleMask;
+            move->flags |= removeBlackShortCastleFlag;
+        }
+
+        if (move->from == a8 && canBlackLongCastle(chessBoard))
+        {
+            chessBoard->flags &= ~blackLongCastleMask;
+            move->flags |= removeBlackLongCastleFlag;
+        }
+
         switch (capture)
         {
             case pawn:
@@ -1774,6 +1786,18 @@ void makeRookMove(ChessBoard *chessBoard, Move *move)
         chessBoard->whitePieces |= move->to;
         chessBoard->allPieces &= ~move->from;
         chessBoard->allPieces |= move->to;
+
+        if (move->from == h1 && canWhiteShortCastle(chessBoard))
+        {
+            chessBoard->flags &= ~whiteShortCastleMask;
+            move->flags |= removeWhiteShortCastleFlag;
+        }
+
+        if (move->from == a1 && canWhiteLongCastle(chessBoard))
+        {
+            chessBoard->flags &= ~whiteLongCastleMask;
+            move->flags |= removeWhiteLongCastleFlag;
+        }
 
         switch (capture)
         {
@@ -1920,6 +1944,18 @@ void makeKingMove(ChessBoard *chessBoard, Move *move)
         chessBoard->allPieces &= ~move->from;
         chessBoard->allPieces |= move->to;
 
+        if (move->from == e8 && canBlackShortCastle(chessBoard))
+        {
+            chessBoard->flags &= ~blackShortCastleMask;
+            move->flags |= removeBlackShortCastleFlag;
+        }
+
+        if (move->from == e8 && canBlackLongCastle(chessBoard))
+        {
+            chessBoard->flags &= ~blackLongCastleMask;
+            move->flags |= removeBlackLongCastleFlag;
+        }
+
         switch (capture)
         {
             case pawn:
@@ -1986,6 +2022,18 @@ void makeKingMove(ChessBoard *chessBoard, Move *move)
         chessBoard->whitePieces |= move->to;
         chessBoard->allPieces &= ~move->from;
         chessBoard->allPieces |= move->to;
+
+        if (move->from == e1 && canWhiteShortCastle(chessBoard))
+        {
+            chessBoard->flags &= ~whiteShortCastleMask;
+            move->flags |= removeWhiteShortCastleFlag;
+        }
+
+        if (move->from == e1 && canWhiteLongCastle(chessBoard))
+        {
+            chessBoard->flags &= ~whiteLongCastleMask;
+            move->flags |= removeWhiteLongCastleFlag;
+        }
 
         switch (capture)
         {
@@ -2355,6 +2403,16 @@ void unMakeRookMove(ChessBoard *chessBoard, Move *move)
         chessBoard->allPieces &= ~move->to;
         chessBoard->allPieces |= move->from;
 
+        if (move->flags & removeBlackLongCastleFlag)
+        {
+            chessBoard->flags |= blackLongCastleMask;
+        }
+
+        if (move->flags & removeBlackShortCastleFlag)
+        {
+            chessBoard->flags |= blackShortCastleMask;
+        }
+        
         switch (capture)
         {
             case pawn:
@@ -2397,6 +2455,16 @@ void unMakeRookMove(ChessBoard *chessBoard, Move *move)
         chessBoard->whitePieces |= move->from;
         chessBoard->allPieces &= ~move->to;
         chessBoard->allPieces |= move->from;
+
+        if (move->flags & removeWhiteLongCastleFlag)
+        {
+            chessBoard->flags |= whiteLongCastleMask;
+        }
+
+        if (move->flags & removeWhiteShortCastleFlag)
+        {
+            chessBoard->flags |= whiteShortCastleMask;
+        }
 
         switch (capture)
         {
@@ -2541,6 +2609,16 @@ void unMakeKingMove(ChessBoard *chessBoard, Move *move)
         chessBoard->allPieces &= ~move->to;
         chessBoard->allPieces |= move->from;
 
+        if (move->flags & removeBlackLongCastleFlag)
+        {
+            chessBoard->flags |= blackLongCastleMask;
+        }
+
+        if (move->flags & removeBlackShortCastleFlag)
+        {
+            chessBoard->flags |= blackShortCastleMask;
+        }
+
         switch (capture)
         {
             case pawn:
@@ -2606,6 +2684,16 @@ void unMakeKingMove(ChessBoard *chessBoard, Move *move)
         chessBoard->whitePieces |= move->from;
         chessBoard->allPieces &= ~move->to;
         chessBoard->allPieces |= move->from;
+
+         if (move->flags & removeWhiteLongCastleFlag)
+        {
+            chessBoard->flags |= whiteLongCastleMask;
+        }
+
+        if (move->flags & removeWhiteShortCastleFlag)
+        {
+            chessBoard->flags |= whiteShortCastleMask;
+        }
 
         switch (capture)
         {
