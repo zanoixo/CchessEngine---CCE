@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
+
+uint64_t positionsGenerated = 0;
 
 void ASSERT_BIT_TABLE(uint64_t acctual, uint64_t expected)
 {
@@ -174,6 +177,16 @@ void ASSERT_CHESS_BOARD(ChessBoard *original, ChessBoard *modified)
     if (original->whiteKing != modified->whiteKing)
     {
         printf("WHITE KING ASSERT FAILED\n");
+        printf("EXPECTED: \n");
+        showBitBoard(original->whiteKing);
+        printf("GOT: \n");
+        showBitBoard(modified->whiteKing);
+        exit(1);
+    }
+
+    if (original->flags != modified->flags)
+    {
+        printf("FLAG ASSERT FAILED\n");
         printf("EXPECTED: \n");
         showBitBoard(original->whiteKing);
         printf("GOT: \n");
@@ -1905,6 +1918,7 @@ void generatePositions(ChessBoard *chessBoard, AttackTables *attackTables, int d
 {
     if (depth == 0)
     {
+        positionsGenerated++;
         return;
     }
     
@@ -1919,7 +1933,7 @@ void generatePositions(ChessBoard *chessBoard, AttackTables *attackTables, int d
     memcpy(chessBoardOriginal, chessBoard, sizeof(ChessBoard));
 
     generateMoves(chessBoard, attackTables, moveList);
-
+    
     for (int i = 0; i < moveList->nextIndex; i++)
     {
         makeMove(chessBoard, &moveList->moves[i]);
@@ -1954,11 +1968,81 @@ void runMakeMoveTests()
     AttackTables* attackTables = initAttackTables();
     createPosition("startingPosition.txt", chessBoard);
     chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 1);
 
-    generatePositions(chessBoard, attackTables, 6);
+    ASSERT(positionsGenerated, 20);
+
+    positionsGenerated = 0;
 
     free(attackTables);
     free(chessBoard);
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 2);
+
+    ASSERT(positionsGenerated, 400);
+
+    positionsGenerated = 0;
+
+    free(attackTables);
+    free(chessBoard);
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 3);
+
+    ASSERT(positionsGenerated, 8902);
+
+    positionsGenerated = 0;
+
+    free(attackTables);
+    free(chessBoard);
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 4);
+
+    ASSERT(positionsGenerated, 197281);
+
+    positionsGenerated = 0;
+
+    free(attackTables);
+    free(chessBoard);
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 5);
+
+    ASSERT(positionsGenerated, 4865609);
+
+    positionsGenerated = 0;
+
+    free(attackTables);
+    free(chessBoard);
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("startingPosition.txt", chessBoard);
+    chessBoard->flags = whiteLongCastleMask | whiteShortCastleMask | blackLongCastleMask | blackShortCastleMask;
+    generatePositions(chessBoard, attackTables, 6);
+
+    ASSERT(positionsGenerated, 119060324);
+
+    positionsGenerated = 0;
+
+    free(attackTables);
+    free(chessBoard);
+
+    printf("[PASS] START POSSITION MAKE AND UNMAKE MOVE TESTS PASSED\n");
 
     chessBoard = initChessBoard();
     attackTables = initAttackTables();
@@ -1969,6 +2053,19 @@ void runMakeMoveTests()
 
     free(attackTables);
     free(chessBoard);
+
+    printf("[PASS] CASTLLLING MAKE AND UNMAKE MOVE TESTS PASSED\n");
+
+    chessBoard = initChessBoard();
+    attackTables = initAttackTables();
+    createPosition("promotionPosition.txt", chessBoard);
+
+    generatePositions(chessBoard, attackTables, 6);
+
+    free(attackTables);
+    free(chessBoard);
+
+    printf("[PASS] PROMOTION MAKE AND UNMAKE MOVE TESTS PASSED\n");
 
     printf("[PASS] ALL MAKE AND UNMAKE MOVE TESTS PASSED\n");
 }

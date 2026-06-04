@@ -3106,6 +3106,12 @@ void unMakeMove(ChessBoard *chessBoard, Move *move)
 
     uint8_t piece = getPieceFromSquare(move->to, isBlack(chessBoard), chessBoard);
 
+    if (getPromotionPiece(move->flags))
+    {
+        piece = pawn;
+    }
+    
+
     switch (piece)
     {
         case pawn:
