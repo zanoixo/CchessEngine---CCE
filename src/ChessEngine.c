@@ -2,6 +2,21 @@
 #include "ChessBoard.h"
 #include "ChessMoveGenerator.h"
 #include "ChessTests.h"
+#include "ChessEval.h"
+
+void printMove(uint64_t from, uint64_t to, int score)
+{
+    int fromSq = getSqInd(from);
+    int toSq = getSqInd(to);
+
+    char fromFile = 'a' + (fromSq % 8);
+    char fromRank = '1' + (fromSq / 8);
+
+    char toFile = 'a' + (toSq % 8);
+    char toRank = '1' + (toSq / 8);
+
+    printf("from: %c%c to: %c%c Score: %.3f\n", fromFile, fromRank, toFile, toRank, ((double)score) / 100);
+}
 
 int userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, AttackTables* attackTables)
 {
@@ -78,8 +93,9 @@ int main()
     ChessBoard *chessBoard = initChessBoard();
     AttackTables* attackTables = initAttackTables();
     chessBoard->flags = whiteShortCastleMask | whiteLongCastleMask | blackShortCastleMask | blackLongCastleMask;
+    chessBoard->flags = 1;
 
-    char fileName[] = "startingPosition.txt";
+    char fileName[] = "jakaPos.txt";
 
     createPosition(fileName, chessBoard);
 
@@ -108,6 +124,10 @@ int main()
         }
 
         showPosition(chessBoard);
+
+        MoveScore bestMove = evaluate(chessBoard, attackTables);
+
+        printMove(bestMove.move.from, bestMove.move.to, bestMove.score);
         
     }
 

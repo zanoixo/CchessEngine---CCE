@@ -24,8 +24,8 @@ int evaluatePosition(ChessBoard *chessBoard)
     score += countPieces(chessBoard->whitePawns)   * PAWN_VALUE;
     score += countPieces(chessBoard->whiteKnights) * KNIGHT_VALUE;
     score += countPieces(chessBoard->whiteBishops) * BISHOP_VALUE;
-    score += popCount(chessBoard->whiteRooks)   * ROOK_VALUE;
-    score += popCount(chessBoard->whiteQueens)  * QUEEN_VALUE;
+    score += countPieces(chessBoard->whiteRooks)   * ROOK_VALUE;
+    score += countPieces(chessBoard->whiteQueens)  * QUEEN_VALUE;
 
     score -= countPieces(chessBoard->blackPawns)   * PAWN_VALUE;
     score -= countPieces(chessBoard->blackKnights) * KNIGHT_VALUE;
@@ -36,49 +36,48 @@ int evaluatePosition(ChessBoard *chessBoard)
     return score;
 }
 
-int whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta)
+MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta)
 {
-    if (depth == 0)
-    {
-        return evaluatePosition(chessBoard);
-    }
+    MoveScore bestMove;
+    bestMove.score = MAX_INT;
 
     MoveList moveList;
     moveList.moves = malloc(sizeof(Move) * 256);
     moveList.nextIndex = 0;
 
+    MoveScore moveScore;
     int legalMoves = 0;
 
     generateMoves(chessBoard, attackTables, &moveList);
-
-    int bestScore = MIN_INT;
 
     for (int i = 0; i < moveList.nextIndex; i++)
     {
         makeMove(chessBoard, &moveList.moves[i]);
 
-        uint64_t kingPosition = chessBoard->whiteKing;
-
-        if (!isSquareAttacked(getSqInd(kingPosition), chessBoard, attackTables, white))
+        if (!isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, black))
         {
             legalMoves++;
 
-            int score = blackMove(chessBoard, attackTables, depth - 1, alpha, beta);
-
-            if (score > bestScore)
+            if (depth > 0)
             {
-                bestScore = score;
-            }
+                moveScore = whiteMove(chessBoard, attackTables, depth - 1, alpha, beta);
 
-            if (score > alpha)
-            {
-                alpha = score;
-            }
+                if (moveScore.score < bestMove.score)
+                {
+                    bestMove = moveScore;
+                    bestMove.move = moveList.moves[i];
+                }
 
-            if (alpha >= beta)
-            {
-                unMakeMove(chessBoard, &moveList.moves[i]);
-                break;
+                if (moveScore.score < beta)
+                {
+                    beta = moveScore.score;
+                }
+
+                if (alpha >= beta)
+                {
+                    unMakeMove(chessBoard, &moveList.moves[i]);
+                    break;
+                }
             }
         }
 
@@ -89,60 +88,65 @@ int whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int
 
     if (legalMoves == 0)
     {
-        if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, black))
-        {
-            return MIN_INT;
-        }
+        if (isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, black))
+            bestMove.score = MAX_INT;
+        else
+            bestMove.score = 0;
 
-        return 0;
+        return bestMove;
     }
 
-    return bestScore;
-}
-
-int blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta)
-{
     if (depth == 0)
     {
-        return evaluatePosition(chessBoard);
+        bestMove.score = evaluatePosition(chessBoard);
+        return bestMove;
     }
+
+    return bestMove;
+}
+
+MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta)
+{
+    MoveScore bestMove;
+    bestMove.score = MIN_INT;
 
     MoveList moveList;
     moveList.moves = malloc(sizeof(Move) * 256);
     moveList.nextIndex = 0;
 
+    MoveScore moveScore;
     int legalMoves = 0;
 
     generateMoves(chessBoard, attackTables, &moveList);
-
-    int bestScore = MAX_INT;
 
     for (int i = 0; i < moveList.nextIndex; i++)
     {
         makeMove(chessBoard, &moveList.moves[i]);
 
-        uint64_t kingPosition = chessBoard->blackKing;
-
-        if (!isSquareAttacked(getSqInd(kingPosition), chessBoard, attackTables, black))
+        if (!isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, white))
         {
             legalMoves++;
 
-            int score = whiteMove(chessBoard, attackTables, depth - 1, alpha, beta);
-
-            if (score < bestScore)
+            if (depth > 0)
             {
-                bestScore = score;
-            }
+                moveScore = blackMove(chessBoard, attackTables, depth - 1, alpha, beta);
 
-            if (score < beta)
-            {
-                beta = score;
-            }
+                if (moveScore.score > bestMove.score)
+                {
+                    bestMove = moveScore;
+                    bestMove.move = moveList.moves[i];
+                }
 
-            if (alpha >= beta)
-            {
-                unMakeMove(chessBoard, &moveList.moves[i]);
-                break;
+                if (moveScore.score > alpha)
+                {
+                    alpha = moveScore.score;
+                }
+
+                if (alpha >= beta)
+                {
+                    unMakeMove(chessBoard, &moveList.moves[i]);
+                    break;
+                }
             }
         }
 
@@ -153,22 +157,32 @@ int blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int
 
     if (legalMoves == 0)
     {
-        if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, black))
-        {
-            return MAX_INT;
-        }
+        if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, white))
+            bestMove.score = MIN_INT;
+        else
+            bestMove.score = 0;
 
-        return 0;
+        return bestMove;
     }
 
-    return bestScore;
+    if (depth == 0)
+    {
+        bestMove.score = evaluatePosition(chessBoard);
+        return bestMove;
+    }
+
+    return bestMove;
 }
 
-int evaluate(ChessBoard *chessBoard)
+MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables)
 {
+    MoveScore bestMove;
     if (isBlack(chessBoard))
     {
-        /* code */
+        bestMove = blackMove(chessBoard, attackTables, 7, MIN_INT, MAX_INT);
+    }else
+    {
+        bestMove = whiteMove(chessBoard, attackTables, 7, MIN_INT, MAX_INT);
     }
-    
+    return bestMove;
 }
