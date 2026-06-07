@@ -80,7 +80,8 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
     bestMove.score = MAX_INT;
 
     MoveList moveList;
-    moveList.moves = malloc(sizeof(Move) * 256);
+    Move moves[256];
+    moveList.moves = moves;
     moveList.nextIndex = 0;
 
     MoveScore moveScore;
@@ -124,8 +125,6 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
         unMakeMove(chessBoard, &moveList.moves[i]);
     }
 
-    free(moveList.moves);
-
     if (legalMoves == 0)
     {
         if (isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1))
@@ -151,7 +150,8 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
     bestMove.score = MIN_INT - 1;
 
     MoveList moveList;
-    moveList.moves = malloc(sizeof(Move) * 256);
+    Move moves[256];
+    moveList.moves = moves;
     moveList.nextIndex = 0;
 
     MoveScore moveScore;
@@ -195,8 +195,6 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
         unMakeMove(chessBoard, &moveList.moves[i]);
     }
 
-    free(moveList.moves);
-
     if (legalMoves == 0)
     {
         if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
@@ -220,10 +218,10 @@ MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables)
     MoveScore bestMove;
     if (isBlack(chessBoard))
     {
-        bestMove = blackMove(chessBoard, attackTables, 6, MIN_INT, MAX_INT);
+        bestMove = blackMove(chessBoard, attackTables, 8, MIN_INT, MAX_INT);
     }else
     {
-        bestMove = whiteMove(chessBoard, attackTables, 6, MIN_INT, MAX_INT);
+        bestMove = whiteMove(chessBoard, attackTables, 8, MIN_INT, MAX_INT);
     }
     return bestMove;
 }
