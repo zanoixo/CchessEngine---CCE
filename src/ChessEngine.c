@@ -93,9 +93,8 @@ int main()
     ChessBoard *chessBoard = initChessBoard();
     AttackTables* attackTables = initAttackTables();
     chessBoard->flags = whiteShortCastleMask | whiteLongCastleMask | blackShortCastleMask | blackLongCastleMask;
-    chessBoard->flags = 1;
-
-    char fileName[] = "jakaPos.txt";
+    
+    char fileName[] = "startingPosition.txt";
 
     createPosition(fileName, chessBoard);
 

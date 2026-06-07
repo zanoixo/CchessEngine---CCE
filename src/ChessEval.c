@@ -3,6 +3,24 @@
 #include "ChessUtils.h"
 #include "ChessEval.h"
 
+uint64_t innerCenterEval = 0b00000000ULL << 56 |
+                           0b00000000ULL << 48 |
+                           0b00000000ULL << 40 |
+                           0b00011000ULL << 32 |
+                           0b00011000ULL << 24 |
+                           0b00000000ULL << 16 |
+                           0b00000000ULL << 8  |
+                           0b00000000ULL;
+
+uint64_t outerCenterEval = 0b00000000ULL << 56 |
+                           0b00000000ULL << 48 |
+                           0b00111100ULL << 40 |
+                           0b00100100ULL << 32 |
+                           0b00100100ULL << 24 |
+                           0b00111100ULL << 16 |
+                           0b00000000ULL << 8  |
+                           0b00000000ULL;
+
 int countPieces(uint64_t bitboard)
 {
     int count = 0;
@@ -26,12 +44,16 @@ int evaluatePosition(ChessBoard *chessBoard)
     score += countPieces(chessBoard->whiteBishops) * BISHOP_VALUE;
     score += countPieces(chessBoard->whiteRooks)   * ROOK_VALUE;
     score += countPieces(chessBoard->whiteQueens)  * QUEEN_VALUE;
+    score += countPieces(chessBoard->whitePieces & innerCenterEval) * INNER_CENTER_VALUE;
+    score += countPieces(chessBoard->whitePieces & outerCenterEval) * OUTER_CENTER_VALUE;
 
     score -= countPieces(chessBoard->blackPawns)   * PAWN_VALUE;
     score -= countPieces(chessBoard->blackKnights) * KNIGHT_VALUE;
     score -= countPieces(chessBoard->blackBishops) * BISHOP_VALUE;
     score -= countPieces(chessBoard->blackRooks)   * ROOK_VALUE;
     score -= countPieces(chessBoard->blackQueens)  * QUEEN_VALUE;
+    score -= countPieces(chessBoard->blackPieces & innerCenterEval) * INNER_CENTER_VALUE;
+    score -= countPieces(chessBoard->blackPieces & outerCenterEval) * OUTER_CENTER_VALUE;
 
     return score;
 }
@@ -54,7 +76,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
     {
         makeMove(chessBoard, &moveList.moves[i]);
 
-        if (!isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, black))
+        if (!isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1))
         {
             legalMoves++;
 
@@ -88,8 +110,8 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
     if (legalMoves == 0)
     {
-        if (isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, black))
-            bestMove.score = MAX_INT;
+        if (isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1))
+            bestMove.score = BLACK_MATED + depth;
         else
             bestMove.score = 0;
 
@@ -108,7 +130,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta)
 {
     MoveScore bestMove;
-    bestMove.score = MIN_INT;
+    bestMove.score = MIN_INT - 1;
 
     MoveList moveList;
     moveList.moves = malloc(sizeof(Move) * 256);
@@ -123,7 +145,7 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
     {
         makeMove(chessBoard, &moveList.moves[i]);
 
-        if (!isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, white))
+        if (!isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
         {
             legalMoves++;
 
@@ -134,7 +156,7 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
                 if (moveScore.score > bestMove.score)
                 {
                     bestMove = moveScore;
-                    bestMove.move = moveList.moves[i];
+                    bestMove.move = moveList.moves[i];  
                 }
 
                 if (moveScore.score > alpha)
@@ -157,8 +179,8 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
     if (legalMoves == 0)
     {
-        if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, white))
-            bestMove.score = MIN_INT;
+        if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
+            bestMove.score = WHITE_MATED - depth;
         else
             bestMove.score = 0;
 
@@ -168,7 +190,6 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
     if (depth == 0)
     {
         bestMove.score = evaluatePosition(chessBoard);
-        return bestMove;
     }
 
     return bestMove;

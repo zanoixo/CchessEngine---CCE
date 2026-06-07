@@ -3,12 +3,16 @@
 
 #define MAX_INT 1000000000
 #define MIN_INT -1000000000
+#define BLACK_MATED 1000000
+#define WHITE_MATED -1000000 
 
 #define PAWN_VALUE   100
 #define KNIGHT_VALUE 330
 #define BISHOP_VALUE 320
 #define ROOK_VALUE   500
 #define QUEEN_VALUE  900
+#define INNER_CENTER_VALUE 20
+#define OUTER_CENTER_VALUE 10
 
 typedef struct MoveScore
 {
