@@ -99,7 +99,7 @@ int main()
     createPosition(fileName, chessBoard);
 
     //runAllTests();
-
+    evaluate(chessBoard, attackTables);
     while(1)
     {
         char from[3];

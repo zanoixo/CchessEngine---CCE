@@ -21,6 +21,52 @@ uint64_t outerCenterEval = 0b00000000ULL << 56 |
                            0b00000000ULL << 8  |
                            0b00000000ULL;
 
+Move killerMoves[MAX_DEPTH + 1][2];
+uint64_t LEGAL_MOVES = 84998978956;
+uint64_t MOVE_COUNTER = 0;
+
+void initKillerMoves()
+{
+    for (int i = 0; i < MAX_DEPTH + 1; i++)
+    {
+        killerMoves[i][0] = (Move){0, 0, 0, 0};
+        killerMoves[i][1] = (Move){0, 0, 0, 0};
+    }
+}
+
+void findKillerMoves(MoveList *moveList, int depth)
+{
+    for (int i = 0; i < moveList->nextIndex; i++)
+    {
+        if (moveList->moves[i].from == killerMoves[depth][0].from &&
+             moveList->moves[i].to == killerMoves[depth][0].to)
+        {
+            moveList->moves[i].score = 200;
+        }
+
+        if (moveList->moves[i].from == killerMoves[depth][1].from &&
+             moveList->moves[i].to == killerMoves[depth][1].to)
+        {
+            moveList->moves[i].score = 100;
+        }
+        
+    }
+    
+}
+
+void setKillerMove(Move killerMove, int depth)
+{
+    if (!getPromotionPiece(killerMove.flags) && !getCapturedPiece(killerMove.flags))
+    {
+        if (!(killerMoves[depth][0].from == killerMove.from && killerMoves[depth][0].to == killerMove.to) &&
+            !(killerMoves[depth][1].from == killerMove.from && killerMoves[depth][1].to == killerMove.to))
+        {
+            killerMoves[depth][1] = killerMoves[depth][0];
+            killerMoves[depth][0] = killerMove;
+        } 
+    }
+}
+
 int countPieces(uint64_t bitboard)
 {
     int count = 0;
@@ -89,8 +135,11 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
     generateMoves(chessBoard, attackTables, &moveList);
 
+    findKillerMoves(&moveList, depth);
+
     for (int i = 0; i < moveList.nextIndex; i++)
     {
+        //MOVE_COUNTER++;
         setBestMoveFirst(&moveList, i);
 
         makeMove(chessBoard, &moveList.moves[i]);
@@ -98,7 +147,6 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
         if (!isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1))
         {
             legalMoves++;
-
             if (depth > 0)
             {
                 moveScore = whiteMove(chessBoard, attackTables, depth - 1, alpha, beta);
@@ -116,6 +164,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
                 if (alpha >= beta)
                 {
+                    setKillerMove(moveList.moves[i], depth);
                     unMakeMove(chessBoard, &moveList.moves[i]);
                     break;
                 }
@@ -159,8 +208,11 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
     generateMoves(chessBoard, attackTables, &moveList);
 
+    findKillerMoves(&moveList, depth);
+
     for (int i = 0; i < moveList.nextIndex; i++)
     {
+        //MOVE_COUNTER++;
         setBestMoveFirst(&moveList, i);
 
         makeMove(chessBoard, &moveList.moves[i]);
@@ -168,7 +220,6 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
         if (!isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
         {
             legalMoves++;
-
             if (depth > 0)
             {
                 moveScore = blackMove(chessBoard, attackTables, depth - 1, alpha, beta);
@@ -186,6 +237,7 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 
                 if (alpha >= beta)
                 {
+                    setKillerMove(moveList.moves[i], depth);
                     unMakeMove(chessBoard, &moveList.moves[i]);
                     break;
                 }
@@ -216,12 +268,15 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
 MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables)
 {
     MoveScore bestMove;
+    initKillerMoves();
+
     if (isBlack(chessBoard))
     {
-        bestMove = blackMove(chessBoard, attackTables, 8, MIN_INT, MAX_INT);
+        bestMove = blackMove(chessBoard, attackTables, MAX_DEPTH, MIN_INT, MAX_INT);
     }else
     {
-        bestMove = whiteMove(chessBoard, attackTables, 8, MIN_INT, MAX_INT);
+        bestMove = whiteMove(chessBoard, attackTables, MAX_DEPTH, MIN_INT, MAX_INT);
     }
+    //printf("Moves cut: %llu\n", LEGAL_MOVES - MOVE_COUNTER);
     return bestMove;
 }
