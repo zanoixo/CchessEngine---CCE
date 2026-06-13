@@ -1,4 +1,4 @@
-#ifndef CHESS_BOARD_H
+#pragma once
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -41,5 +41,3 @@ void showPosition(const ChessBoard* chessBoard);
 ChessBoard* initChessBoard();
 void createPosition(char fileName[], ChessBoard *chessBoard);
 void initStartingPosition(ChessBoard *chessBoard);
-
-#endif

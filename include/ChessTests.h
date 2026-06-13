@@ -1,7 +1,5 @@
-#ifndef CHESS_TESTS_H
+#pragma once
 
 void runAttackTablesTests();
 void runPseudeLegalMovesTests();
 void runAllTests();
-
-#endif

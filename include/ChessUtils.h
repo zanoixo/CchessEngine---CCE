@@ -1,4 +1,4 @@
-#ifndef CHESS_BOARD_H
+#pragma once
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -22,5 +22,3 @@ enum color
 
 void showBitBoard(uint64_t bitBoard);
 void sendError(char errorMsg[]);
-
-#endif

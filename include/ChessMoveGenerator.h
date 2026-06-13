@@ -1,4 +1,4 @@
-#ifndef CHESS_MOVE_GENERATOR_H
+#pragma once
 
 #include "ChessBoard.h"
 
@@ -94,5 +94,3 @@ uint8_t isBlack(ChessBoard *chessBoard);
 uint8_t getSqInd(uint64_t sq);
 uint8_t getCapturedPiece(uint16_t flags);
 uint8_t getPromotionPiece(uint16_t flags);
-
-#endif

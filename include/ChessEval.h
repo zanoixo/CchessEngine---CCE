@@ -1,4 +1,4 @@
-#ifndef CHESS_EVAL_H
+#pragma once
 
 #include "ChessMoveGenerator.h"
 
@@ -33,5 +33,3 @@ typedef struct MoveScore
 MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables);
 MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta);
 MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta);
-
-#endif
