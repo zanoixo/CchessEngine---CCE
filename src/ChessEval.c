@@ -219,7 +219,6 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int dept
         
         if (!isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
         {
-            
             legalMoves++;
             if (depth > 0)
             {

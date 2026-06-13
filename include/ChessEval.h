@@ -2,7 +2,7 @@
 
 #include "ChessMoveGenerator.h"
 
-#define MAX_DEPTH 9
+#define MAX_DEPTH 7
 
 #define MAX_INT 1000000000
 #define MIN_INT -1000000000

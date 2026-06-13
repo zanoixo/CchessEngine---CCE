@@ -197,9 +197,9 @@ void uci_loop()
         
         else if (strncmp(line, "go", 2) == 0) 
         { 
-            char moveStr[6] = "c2c3";
+            char moveStr[6];
             bestMove(moveStr, chessBoard, attackTables);
-            printf("bestmove %c%c%c%c\n", moveStr[0], moveStr[1], moveStr[2], moveStr[3]);
+            printf("bestmove %s\n", moveStr);
             fflush(stdout); 
         }
 
