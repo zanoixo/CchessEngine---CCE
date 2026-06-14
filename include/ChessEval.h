@@ -35,7 +35,7 @@ typedef struct MoveScore
 }MoveScore;
 
 
-MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables);
+MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables, uint64_t timePerMove);
 MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta);
 MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, int depth, int alpha, int beta);
 int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, int alpha, int beta);

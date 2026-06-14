@@ -2,6 +2,8 @@
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
 #include "ChessEval.h"
+#include "ChessTests.h"
+#include <string.h>
 
 uint64_t innerCenterEval = 0b00000000ULL << 56 |
                            0b00000000ULL << 48 |
@@ -523,28 +525,31 @@ MoveScore iterativeSearch(ChessBoard *chessBoard, AttackTables *attackTables, in
     return bestMove;
 }
 
-MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables)
+MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables, uint64_t timePerMove)
 {
     MoveScore currentBestMove;
     MoveScore depthBestMove;
-
+    ChessBoard* chessBoardOriginal = malloc(sizeof(ChessBoard));
     timeLimitReached = 0;
     timeCheckCounter = 1;
-    stopTime = getTimeMs() + 9900;
+    stopTime = getTimeMs() + timePerMove - 100;
 
     uint32_t depth = 1;
 
     while (!timeLimitReached)
     {
-        printf("Started searching depth: %d\n", depth);
+        
+        memcpy(chessBoardOriginal, chessBoard, sizeof(ChessBoard));
+
         depthBestMove = iterativeSearch(chessBoard, attackTables, depth);
+        ASSERT_CHESS_BOARD(chessBoardOriginal, chessBoard);
 
         if (!timeLimitReached)
         {
             currentBestMove = depthBestMove;
         }
         
-        depth++;
+        depth++;  
     }
     return currentBestMove;
 }

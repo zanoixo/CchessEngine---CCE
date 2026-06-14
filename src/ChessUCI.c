@@ -76,10 +76,10 @@ int userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, Attac
     return 1;
 }
 
-void bestMove(char* moveStr, ChessBoard *ChessBoard, AttackTables *attackTables)
+void bestMove(char* moveStr, ChessBoard *ChessBoard, AttackTables *attackTables, uint64_t timePerMove)
 {
     
-    MoveScore best = evaluate(ChessBoard, attackTables);
+    MoveScore best = evaluate(ChessBoard, attackTables, timePerMove);
 
     int fromSq = getSqInd(best.move.from);
     int toSq   = getSqInd(best.move.to);
@@ -160,6 +160,7 @@ void applyUCIMoves(char *moves, ChessBoard *chessBoard, AttackTables *attackTabl
 void uci_loop()
 {
     char line[MAX_LINE];
+    uint64_t timePerMove = 10000;
 
     ChessBoard* chessBoard = initChessBoard();
     AttackTables* attackTables = initAttackTables();
@@ -197,8 +198,15 @@ void uci_loop()
         
         else if (strncmp(line, "go", 2) == 0) 
         { 
+            char *ptr;
+
+            if ((ptr = strstr(line, "movetime")))
+            {
+                timePerMove = strtoull(ptr + 9, NULL, 10);
+            }
+                
             char moveStr[6];
-            bestMove(moveStr, chessBoard, attackTables);
+            bestMove(moveStr, chessBoard, attackTables, timePerMove);
             printf("bestmove %s\n", moveStr);
             fflush(stdout); 
         }
