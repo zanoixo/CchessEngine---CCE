@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define BOARD_SIZE 64
+
 enum Piece
 {
     pawn = 1,

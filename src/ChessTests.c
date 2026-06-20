@@ -204,6 +204,14 @@ void ASSERT_CHESS_BOARD(ChessBoard *original, ChessBoard *modified)
         showBitBoard(modified->enPassantSq);
         isSame = 0;
     }
+
+    if (original->positionHash != modified->positionHash)
+    {
+        printf("POSITION HASH ASSERT FAILED\n");
+        printf("EXPECTED: %llu\n", (unsigned long long)original->positionHash);
+        printf("GOT: %llu\n", (unsigned long long)modified->positionHash);
+        isSame = 0;
+    }
     
 
     if (!isSame)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "ChessBoard.h"
+#include "ChessUtils.h"
 
 #define PIECE_COUNT 12
 #define CASTLE_RIGHT_COUNT 4
@@ -22,6 +22,14 @@ enum pieceHashes
     blackRookHash = 9,
     blackQueenHash = 10,
     blackKingHash = 11,  
+};
+
+enum castellingHashes
+{
+    whiteShortCastleHash = 0,
+    whiteLongCastleHash = 1,
+    blackShortCastleHash = 2,
+    blackLongCastleHash = 3
 };
 
 typedef struct TranspositionTableHashes

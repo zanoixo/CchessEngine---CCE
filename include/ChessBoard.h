@@ -2,8 +2,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-
-#define BOARD_SIZE 64
+#include "ChessTranspositionTables.h"
 
 typedef struct ChessBoard
 {
@@ -41,4 +40,4 @@ enum boardFlags
 void showPosition(const ChessBoard* chessBoard);
 ChessBoard* initChessBoard();
 void createPosition(char fileName[], ChessBoard *chessBoard);
-void initStartingPosition(ChessBoard *chessBoard);
+void initStartingPosition(ChessBoard *chessBoard, TranspositionTableHashes* hashes);

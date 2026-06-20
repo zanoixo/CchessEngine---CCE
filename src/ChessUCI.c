@@ -197,7 +197,7 @@ void uci_loop()
 
         else if (strncmp(line, "position startpos", 17) == 0) 
         { 
-            initStartingPosition(chessBoard);
+            initStartingPosition(chessBoard, hashes);
             char *moves = strstr(line, "moves"); 
             if (moves)
             { 

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "ChessBoard.h"
 #include "ChessUtils.h"
+#include "ChessTranspositionTables.h"
 
 void showPosition(const ChessBoard* chessBoard)
 {
@@ -65,7 +66,7 @@ ChessBoard* initChessBoard()
     return chessBoard;
 }
 
-void initStartingPosition(ChessBoard *chessBoard)
+void initStartingPosition(ChessBoard *chessBoard, TranspositionTableHashes* hashes)
 {
     chessBoard->whitePawns = 0b00000000ULL << 56 |
                              0b00000000ULL << 48 |
@@ -201,6 +202,49 @@ void initStartingPosition(ChessBoard *chessBoard)
                             0b00000000ULL << 16 |
                             0b11111111ULL << 8  |
                             0b11111111ULL;
+
+    chessBoard->positionHash = 0;
+
+    for (int sq = 8; sq < 16; sq++)
+    {
+        chessBoard->positionHash ^= hashes->pieceHashes[whitePawnHash][sq];
+    }
+
+    for (int sq = 48; sq < 56; sq++)
+    {
+        chessBoard->positionHash ^= hashes->pieceHashes[blackPawnHash][sq];
+    }
+
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteRookHash][0];
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteRookHash][7];
+    
+    chessBoard->positionHash ^= hashes->pieceHashes[blackRookHash][56];
+    chessBoard->positionHash ^= hashes->pieceHashes[blackRookHash][63];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteKnightHash][1];
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteKnightHash][6];
+    
+    chessBoard->positionHash ^= hashes->pieceHashes[blackKnightHash][57];
+    chessBoard->positionHash ^= hashes->pieceHashes[blackKnightHash][62];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteBishopHash][2];
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteBishopHash][5];
+    
+    chessBoard->positionHash ^= hashes->pieceHashes[blackBishopHash][58];
+    chessBoard->positionHash ^= hashes->pieceHashes[blackBishopHash][61];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteBishopHash][3];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[blackQueenHash][60];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[whiteKingHash][4];
+
+    chessBoard->positionHash ^= hashes->pieceHashes[blackKingHash][59];
+
+    chessBoard->positionHash ^= hashes->castellingHashes[whiteShortCastleHash];
+    chessBoard->positionHash ^= hashes->castellingHashes[whiteLongCastleHash];
+    chessBoard->positionHash ^= hashes->castellingHashes[blackShortCastleHash];
+    chessBoard->positionHash ^= hashes->castellingHashes[blackLongCastleHash];
 
     chessBoard->enPassantSq = 0;
     chessBoard->flags = whiteShortCastleMask | whiteLongCastleMask | blackShortCastleMask | blackLongCastleMask;     
