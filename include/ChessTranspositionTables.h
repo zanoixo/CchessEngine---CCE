@@ -52,5 +52,5 @@ typedef struct TranspositionTableEntry
 
 TranspositionTableHashes* initTranpositionTableHashes();
 TranspositionTableEntry* initTranpositionTable();
-MoveScore* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth);
+MoveScore* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, int isEvalOnly);
 void setTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, MoveScore* move);

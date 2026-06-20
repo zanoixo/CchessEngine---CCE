@@ -54,11 +54,17 @@ TranspositionTableEntry* initTranpositionTable()
     return transpositionTable;
 }
 
-MoveScore* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth)
+MoveScore* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, int isEvalOnly)
 {
     uint64_t index = chessBoard->positionHash & transpositionTableMask;
 
-    if (transpositionTable[index].depth < remainingDepth || transpositionTable[index].hash != chessBoard->positionHash)
+    if (isEvalOnly && transpositionTable[index].hash != chessBoard->positionHash)
+    {
+        return NULL;
+    }
+    
+
+    if (!isEvalOnly && (transpositionTable[index].depth < remainingDepth || transpositionTable[index].hash != chessBoard->positionHash))
     {
         return NULL;
     }
