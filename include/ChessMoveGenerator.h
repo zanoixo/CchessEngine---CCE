@@ -1,7 +1,9 @@
 #pragma once
 
-#include "ChessBoard.h"
-#include "ChessTranspositionTables.h"
+#include "ChessUtils.h"
+
+typedef struct TranspositionTableHashes TranspositionTableHashes;
+typedef struct ChessBoard ChessBoard; 
 
 typedef struct MagicTableHash
 {

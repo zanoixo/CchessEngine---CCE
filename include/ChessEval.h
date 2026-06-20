@@ -2,6 +2,9 @@
 
 #include "ChessMoveGenerator.h"
 
+typedef struct ChessBoard ChessBoard;
+typedef struct TranspositionTableHashes TranspositionTableHashes;
+
 #define KILLER_MOVE_DEPTH 128
 #define TIME_CHECK 2047
 
@@ -30,7 +33,7 @@
 
 typedef struct MoveScore
 {
-    int score;
+    int eval;
     Move move;
 }MoveScore;
 

@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#include "ChessTranspositionTables.h"
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
+#include "ChessBoard.h"
 
 uint64_t positionsGenerated = 0;
 

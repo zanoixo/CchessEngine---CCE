@@ -1,10 +1,12 @@
+#include <string.h>
+
 #include "ChessBoard.h"
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
 #include "ChessEval.h"
 #include "ChessTests.h"
 #include "ChessTranspositionTables.h"
-#include <string.h>
+
 
 uint64_t innerCenterEval = 0b00000000ULL << 56 |
                            0b00000000ULL << 48 |
@@ -347,11 +349,11 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
 MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, int depthSearched, int alpha, int beta)
 {
     MoveScore bestMove;
-    bestMove.score = MAX_INT;
+    bestMove.eval = MAX_INT;
 
     if (depthSearched == currentDepth)
     {
-        bestMove.score = qsearchBlack(chessBoard, attackTables, hashes, alpha, beta);
+        bestMove.eval = qsearchBlack(chessBoard, attackTables, hashes, alpha, beta);
         return bestMove;
     }
 
@@ -404,15 +406,15 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 
             moveScore = whiteMove(chessBoard, attackTables, hashes, depthSearched + 1, alpha, beta);
 
-            if (moveScore.score < bestMove.score)
+            if (moveScore.eval < bestMove.eval)
             {
                 bestMove = moveScore;
                 bestMove.move = moveList.moves[i];
             }
 
-            if (moveScore.score < beta)
+            if (moveScore.eval < beta)
             {
-                beta = moveScore.score;
+                beta = moveScore.eval;
             }
 
             if (alpha >= beta)
@@ -432,9 +434,9 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
     if (legalMoves == 0)
     {
         if (isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1))
-            bestMove.score = BLACK_MATED;
+            bestMove.eval = BLACK_MATED;
         else
-            bestMove.score = 0;
+            bestMove.eval = 0;
 
         return bestMove;
     }
@@ -445,11 +447,11 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, int depthSearched, int alpha, int beta)
 {
     MoveScore bestMove;
-    bestMove.score = MIN_INT - 1;
+    bestMove.eval = MIN_INT - 1;
 
     if (depthSearched == currentDepth)
     {
-        bestMove.score = qsearchWhite(chessBoard, attackTables, hashes, alpha, beta);
+        bestMove.eval = qsearchWhite(chessBoard, attackTables, hashes, alpha, beta);
         return bestMove;
     }
 
@@ -503,15 +505,15 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
             
             moveScore = blackMove(chessBoard, attackTables, hashes, depthSearched + 1, alpha, beta);
 
-            if (moveScore.score > bestMove.score)
+            if (moveScore.eval > bestMove.eval)
             {
                 bestMove = moveScore;
                 bestMove.move = moveList.moves[i];  
             }
 
-            if (moveScore.score > alpha)
+            if (moveScore.eval > alpha)
             {
-                alpha = moveScore.score;
+                alpha = moveScore.eval;
             }
 
             if (alpha >= beta)
@@ -530,9 +532,9 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
     if (legalMoves == 0)
     {
         if (isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0))
-            bestMove.score = WHITE_MATED;
+            bestMove.eval = WHITE_MATED;
         else
-            bestMove.score = 0;
+            bestMove.eval = 0;
 
         return bestMove;
     }
@@ -573,7 +575,7 @@ MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables, Transposi
             currentBestMove = depthBestMove;
         }
 
-        if (currentBestMove.score == BLACK_MATED || currentBestMove.score == WHITE_MATED)
+        if (currentBestMove.eval == BLACK_MATED || currentBestMove.eval == WHITE_MATED)
         {
             break;
         }

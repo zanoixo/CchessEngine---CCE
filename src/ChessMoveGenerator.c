@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+
 #include "ChessEval.h"
 #include "ChessMoveGenerator.h"
 #include "ChessUtils.h"
 #include "ChessTranspositionTables.h"
+#include "ChessBoard.h"
 
 const uint64_t hFile = 0b10000000ULL << 56 |
                        0b10000000ULL << 48 |

@@ -2,7 +2,8 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include "ChessTranspositionTables.h"
+
+typedef struct TranspositionTableHashes TranspositionTableHashes;
 
 typedef struct ChessBoard
 {

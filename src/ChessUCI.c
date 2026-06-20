@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ChessBoard.h>
-#include <ChessEval.h>
-#include <ChessMoveGenerator.h>
-#include <ChessUtils.h>
-#include <ChessTests.h>
-#include <ChessTranspositionTables.h>
+
+#include "ChessBoard.h"
+#include "ChessEval.h"
+#include "ChessMoveGenerator.h"
+#include "ChessUtils.h"
+#include "ChessTests.h"
+#include "ChessTranspositionTables.h"
 
 #define MAX_LINE 2048
 
