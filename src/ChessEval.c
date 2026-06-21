@@ -26,6 +26,78 @@ uint64_t outerCenterEval = 0b00000000ULL << 56 |
                            0b00000000ULL << 8  |
                            0b00000000ULL;
 
+int knightPosTable[64] =
+{
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50
+};
+
+int bishopPosTable[64] =
+{
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20
+};
+
+int rookPosTable[64] =
+{
+     0,  0,  5, 10, 10,  5,  0,  0,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+     5, 10, 10, 10, 10, 10, 10,  5,
+     0,  0,  5, 10, 10,  5,  0,  0
+};
+
+int queenPosTable[64] =
+{
+    -20,-10,-10, -5, -5,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+     -5,  0,  5,  5,  5,  5,  0, -5,
+      0,  0,  5,  5,  5,  5,  0, -5,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20
+};
+
+int whitePawnPosTable[64] =
+{
+      0,  0,  0,  0,  0,  0,  0,  0,
+      5, 10, 10,-20,-20, 10, 10,  5,
+      5, -5,-10,  0,  0,-10, -5,  5,
+      0,  0,  0, 20, 20,  0,  0,  0,
+      5,  5, 10, 25, 25, 10,  5,  5,
+     10, 10, 20, 30, 30, 20, 10, 10,
+     50, 50, 50, 50, 50, 50, 50, 50,
+      0,  0,  0,  0,  0,  0,  0,  0
+};
+
+int blackPawnPosTable[64] =
+{
+     0,  0,  0,  0,  0,  0,  0,  0,
+    50, 50, 50, 50, 50, 50, 50, 50,
+    10, 10, 20, 30, 30, 20, 10, 10,
+     5,  5, 10, 25, 25, 10,  5,  5,
+     0,  0,  0, 20, 20,  0,  0,  0,
+     5, -5,-10,  0,  0,-10, -5,  5,
+     5, 10, 10,-20,-20, 10, 10,  5,
+     0,  0,  0,  0,  0,  0,  0,  0
+};
+
 Move killerMoves[KILLER_MOVE_DEPTH][2];
 uint64_t stopTime = 0;
 int currentDepth;
@@ -92,6 +164,7 @@ int countPieces(uint64_t bitboard)
 int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isBlack)
 {
     int mobility = 0;
+    int piecePositioning = 0;
 
     uint64_t knights = chessBoard->whiteKnights;
     uint64_t bishops = chessBoard->whiteBishops;
@@ -113,6 +186,7 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
         int sq = getSqInd(knights);
         uint64_t attacks = attackTables->knightAttacks[sq] & ~friendlyPieces;
         mobility += countPieces(attacks) * KNIGHT_MOBILITY_VALUE;
+        piecePositioning += knightPosTable[sq];
         knights &= knights - 1;
     }
 
@@ -121,6 +195,7 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
         int sq = getSqInd(bishops);
         uint64_t attacks = getBishopAttackPattern(sq, chessBoard->allPieces, attackTables) & ~friendlyPieces;
         mobility += countPieces(attacks) * BISHOP_MOBILITY_VALUE;
+        piecePositioning += bishopPosTable[sq];
         bishops &= bishops - 1;
     }
 
@@ -129,6 +204,7 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
         int sq = getSqInd(rooks);
         uint64_t attacks = getRookAttackPattern(sq, chessBoard->allPieces, attackTables) & ~friendlyPieces;
         mobility += countPieces(attacks) * ROOK_MOBILITY_VALUE;
+        piecePositioning += rookPosTable[sq];
         rooks &= rooks - 1;
     }
 
@@ -137,13 +213,44 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
         int sq = getSqInd(queens);
         uint64_t attacks = getQueenAttackPattern(sq, chessBoard->allPieces, attackTables) & ~friendlyPieces;
         mobility += (countPieces(attacks) * QUEEN_MOBILITY_VALUE);
+        piecePositioning += queenPosTable[sq];
         queens &= queens - 1;
     }
 
-    return mobility;
+    return mobility + piecePositioning;
 }
 
-int evaluateMaterial(ChessBoard *chessBoard, int isBlack)
+int evaluatePawnPositioning(ChessBoard* chessBoard, int isBlack)
+{
+    int score = 0;
+    
+    if (isBlack)
+    {
+        uint64_t pawns = chessBoard->blackPawns;
+
+        while (pawns)
+        {
+            int sq = getSqInd(pawns);
+            score += blackPawnPosTable[sq];
+            pawns &= pawns - 1;
+        }   
+    }
+    else
+    {
+        uint64_t pawns = chessBoard->whitePawns;
+
+        while (pawns)
+        {
+            int sq = getSqInd(pawns);
+            score += whitePawnPosTable[sq];
+            pawns &= pawns - 1;
+        }     
+    }   
+    
+    return score; 
+}
+
+int evaluateMaterial(ChessBoard* chessBoard, int isBlack)
 {
     int score = 0;
 
@@ -216,11 +323,13 @@ int evaluatePosition(ChessBoard* chessBoard, AttackTables* attackTables)
     score += evaluateMaterial(chessBoard, white);
     score += evaluateCenter(chessBoard, white);
     score += evaluateMobility(chessBoard, attackTables, white);
+    score += evaluatePawnPositioning(chessBoard, white);
     //score += evaluateBishopPair(chessBoard, white);
 
     score -= evaluateMaterial(chessBoard, black);
     score -= evaluateCenter(chessBoard, black);
     score -= evaluateMobility(chessBoard, attackTables, black);
+    score -= evaluatePawnPositioning(chessBoard, black);
     //score -= evaluateBishopPair(chessBoard, black);
 
     return score;
