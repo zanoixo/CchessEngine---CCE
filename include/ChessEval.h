@@ -19,7 +19,7 @@ typedef struct TranspositionTableEntry TranspositionTableEntry;
 #define KNIGHT_VALUE 310
 #define BISHOP_VALUE 330
 #define ROOK_VALUE   500
-#define QUEEN_VALUE  1000
+#define QUEEN_VALUE  900
 #define KING_VALUE  2000
 #define QUEEN_PROMOTION_VALUE 500000
 #define ROOK_PROMOTION_VALUE 400000
@@ -27,8 +27,8 @@ typedef struct TranspositionTableEntry TranspositionTableEntry;
 #define BISHOP_PROMOTION_VALUE 200000
 #define INNER_CENTER_VALUE 20
 #define OUTER_CENTER_VALUE 10
-#define KNIGHT_MOBILITY_VALUE 3
-#define BISHOP_MOBILITY_VALUE 3
+#define KNIGHT_MOBILITY_VALUE 2
+#define BISHOP_MOBILITY_VALUE 2
 #define ROOK_MOBILITY_VALUE 2
 #define QUEEN_MOBILITY_VALUE 1
 #define BISHOP_PAIR_VALUE 40

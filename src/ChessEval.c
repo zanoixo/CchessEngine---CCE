@@ -136,7 +136,7 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
     {
         int sq = getSqInd(queens);
         uint64_t attacks = getQueenAttackPattern(sq, chessBoard->allPieces, attackTables) & ~friendlyPieces;
-        mobility += (countPieces(attacks) * QUEEN_MOBILITY_VALUE) / 2;
+        mobility += (countPieces(attacks) * QUEEN_MOBILITY_VALUE);
         queens &= queens - 1;
     }
 
@@ -216,12 +216,12 @@ int evaluatePosition(ChessBoard* chessBoard, AttackTables* attackTables)
     score += evaluateMaterial(chessBoard, white);
     score += evaluateCenter(chessBoard, white);
     score += evaluateMobility(chessBoard, attackTables, white);
-    score += evaluateBishopPair(chessBoard, white);
+    //score += evaluateBishopPair(chessBoard, white);
 
     score -= evaluateMaterial(chessBoard, black);
     score -= evaluateCenter(chessBoard, black);
     score -= evaluateMobility(chessBoard, attackTables, black);
-    score -= evaluateBishopPair(chessBoard, black);
+    //score -= evaluateBishopPair(chessBoard, black);
 
     return score;
 }
@@ -293,6 +293,8 @@ int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
     moveList.moves = moves;
     moveList.nextIndex = 0;
 
+    int legalMoves = 0;
+
     int gotChecked = isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0);
 
     int moveScore;
@@ -339,6 +341,8 @@ int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
 
         if (!isChecked)
         {
+            legalMoves++;
+
             if (isThreeFoldRepetition(chessBoard))
             {
                 moveScore = DRAW;    
@@ -367,6 +371,10 @@ int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
+    if (gotChecked && legalMoves == 0)
+    {
+        alpha = BLACK_MATED;
+    }
     return alpha;
 }
 
@@ -394,6 +402,8 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
     Move moves[256];
     moveList.moves = moves;
     moveList.nextIndex = 0;
+
+    int legalMoves = 0;
 
     int gotChecked = isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1);
 
@@ -440,6 +450,8 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
 
         if (!isLegalMove)
         {
+            legalMoves++;
+
             if (isThreeFoldRepetition(chessBoard))
             {
                 moveScore = DRAW;    
@@ -468,6 +480,11 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
+    if (gotChecked && legalMoves == 0)
+    {
+        beta = WHITE_MATED;
+    }
+    
     return beta;
 }
 
