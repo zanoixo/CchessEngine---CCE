@@ -3480,6 +3480,8 @@ void unMakeMove(ChessBoard *chessBoard, Move *move, TranspositionTableHashes* ha
     }
 
     chessBoard->enPassantSq = move->prevEnPassantSq;
+
+    removeMovefromHistory(chessBoard);
 }
 
 void makeMove(ChessBoard *chessBoard, Move *move, TranspositionTableHashes* hashes)
@@ -3520,6 +3522,8 @@ void makeMove(ChessBoard *chessBoard, Move *move, TranspositionTableHashes* hash
     
     
     chessBoard->positionHash ^= hashes->colorHash;
+
+    addMoveToHistory(chessBoard);
 }
 
 AttackTables* initAttackTables()

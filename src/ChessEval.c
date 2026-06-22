@@ -444,7 +444,6 @@ int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
         
 
         makeMove(chessBoard, &moveList.moves[i], hashes);
-        addMoveToHistory(chessBoard);
 
         int isChecked = isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0);
 
@@ -469,14 +468,12 @@ int qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
             if (alpha >= beta)
             {
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
-                removeMovefromHistory(chessBoard);
                 //ASSERT_CHESS_BOARD(original, chessBoard);
                 break;
             }
         }
 
         unMakeMove(chessBoard, &moveList.moves[i], hashes);
-        removeMovefromHistory(chessBoard);
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
@@ -553,7 +550,6 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
         }
 
         makeMove(chessBoard, &moveList.moves[i], hashes);
-        addMoveToHistory(chessBoard);
 
         int isLegalMove = isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1);
 
@@ -578,14 +574,12 @@ int qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Transpositi
             if (alpha >= beta)
             {
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
-                removeMovefromHistory(chessBoard);
                 //ASSERT_CHESS_BOARD(original, chessBoard);
                 break;
             }
         }
 
         unMakeMove(chessBoard, &moveList.moves[i], hashes);
-        removeMovefromHistory(chessBoard);
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
@@ -648,7 +642,6 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
         setBestMoveFirst(&moveList, chessBoard, transpositionTable, i);
 
         makeMove(chessBoard, &moveList.moves[i], hashes);
-        addMoveToHistory(chessBoard);
 
         int isChecked = isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1);
 
@@ -681,7 +674,6 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
             {
                 setKillerMove(moveList.moves[i], depthSearched);
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
-                removeMovefromHistory(chessBoard);
                 //ASSERT_CHESS_BOARD(original, chessBoard);
                 break;
             }
@@ -689,7 +681,6 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
         }
 
         unMakeMove(chessBoard, &moveList.moves[i], hashes);
-        removeMovefromHistory(chessBoard);
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
@@ -757,7 +748,6 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
         setBestMoveFirst(&moveList, chessBoard, transpositionTable, i);
         
         makeMove(chessBoard, &moveList.moves[i], hashes);
-        addMoveToHistory(chessBoard);
 
         int isChecked = isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0);
 
@@ -790,14 +780,13 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
             {
                 setKillerMove(moveList.moves[i], depthSearched);
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
-                removeMovefromHistory(chessBoard);
+                
                 //ASSERT_CHESS_BOARD(original, chessBoard);
                 break;
             }
             
         }
         unMakeMove(chessBoard, &moveList.moves[i], hashes);
-        removeMovefromHistory(chessBoard);
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
