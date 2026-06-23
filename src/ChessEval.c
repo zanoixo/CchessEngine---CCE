@@ -382,6 +382,7 @@ int isValidQSearchMove(ChessBoard* chessBoard, AttackTables* attackTables, uint1
 
 MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depth, int alpha, int beta)
 {
+    /*
     nodesSearched++;
 
     TranspositionTableEntry* transpositionScore;
@@ -412,6 +413,8 @@ MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         }
         
     }
+
+    */
 
     MoveScore bestMove;
     bestMove.eval = evaluatePosition(chessBoard, attackTables);
@@ -515,11 +518,14 @@ MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         //ASSERT_CHESS_BOARD(original, chessBoard);
     }
     //free(original);
+
+    
     if (gotChecked && legalMoves == 0)
     {
         bestMove.eval = BLACK_MATED;
     }
 
+    /*
     if (bestMove.eval >= originalBeta)
     {
         transpositionFlag = betaCutoff;
@@ -533,13 +539,16 @@ MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         transpositionFlag = exactCutoff;
     }
 
-    setTransposition(chessBoard, transpositionTable, 0, transpositionFlag, &bestMove);
+    setTransposition(chessBoard, transpositionTable, -1, transpositionFlag, &bestMove);
+
+    */
 
     return bestMove;
 }
 
 MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depth, int alpha, int beta)
 {
+    /*
     TranspositionTableEntry* transpositionScore;
     transpositionScore = getTransposition(chessBoard, transpositionTable, 0, 1);
     
@@ -563,6 +572,7 @@ MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         }
         
     }
+    */
 
     MoveScore bestMove;
     bestMove.eval = evaluatePosition(chessBoard, attackTables);
@@ -668,6 +678,8 @@ MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         bestMove.eval = WHITE_MATED;
     }
 
+    /*
+
     if (bestMove.eval >= originalBeta)
     {
         transpositionFlag = betaCutoff;
@@ -681,7 +693,9 @@ MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         transpositionFlag = exactCutoff;
     }
 
-    setTransposition(chessBoard, transpositionTable, 0, transpositionFlag, &bestMove);
+    setTransposition(chessBoard, transpositionTable, -1, transpositionFlag, &bestMove);
+
+    */
     
     return bestMove;
 }
@@ -997,15 +1011,17 @@ MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables, Transposi
     qSearchDepthReached = 1;
     while (!timeLimitReached)
     {
+        /*
         nodesSearched = 0;
         transpositionSearches = 0;
         transpositionHits = 0;
         transpositionCutoffs = 0;
+        */
 
         printf("Current search depth: %d\n", currentDepth);
         depthBestMove = iterativeSearch(chessBoard, attackTables, transpositionTable, hashes);
         
-        printf("Nodes: %d, Transposition searches: %d, hits: %d, Cutoffs: %d\n", nodesSearched, transpositionSearches, transpositionHits, transpositionCutoffs);
+        //printf("Nodes: %d, Transposition searches: %d, hits: %d, Cutoffs: %d\n", nodesSearched, transpositionSearches, transpositionHits, transpositionCutoffs);
         if (!timeLimitReached)
         {
             currentBestMove = depthBestMove;
