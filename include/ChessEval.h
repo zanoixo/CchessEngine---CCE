@@ -31,7 +31,7 @@ typedef struct TranspositionTableEntry TranspositionTableEntry;
 #define BISHOP_MOBILITY_VALUE 2
 #define ROOK_MOBILITY_VALUE 2
 #define QUEEN_MOBILITY_VALUE 1
-#define BISHOP_PAIR_VALUE 40
+#define BISHOP_PAIR_VALUE 30
 
 
 typedef struct MoveScore
@@ -46,3 +46,4 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depth, int alpha, int beta);
 MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depth, int alpha, int beta);
 MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depth, int alpha, int beta);
+void clearHistoryHeuristic();

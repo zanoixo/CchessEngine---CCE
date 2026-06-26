@@ -199,6 +199,12 @@ void uci_loop()
             fflush(stdout);
         }
 
+        else if (strcmp(line, "ucinewgame") == 0)
+        {
+            clearHistoryHeuristic();
+            clearTranspositionTable(transpositionTable);
+        }
+
         else if (strncmp(line, "position startpos", 17) == 0) 
         { 
             initStartingPosition(chessBoard, hashes);

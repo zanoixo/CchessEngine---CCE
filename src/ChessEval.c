@@ -99,6 +99,7 @@ int blackPawnPosTable[64] =
 };
 
 Move killerMoves[KILLER_MOVE_DEPTH][2];
+int historyHeuristic[BOARD_SIZE][BOARD_SIZE][DIFFERENT_PIECE_COUNT / 2];
 uint64_t stopTime = 0;
 int currentDepth;
 int qSearchDepthReached;
@@ -109,6 +110,25 @@ int transpositionCutoffs;
 int timeCheckCounter = 1;
 int timeLimitReached = 0;
 
+void penalizeHistoryHeuristic(Move move, int remeniningDepth)
+{
+    historyHeuristic[getSqInd(move.from)][getSqInd(move.to)][getPiece(move.flags) - 1] -= remeniningDepth;     
+}
+
+void updateHistoryHeuristic(Move move, int remeniningDepth)
+{
+    historyHeuristic[getSqInd(move.from)][getSqInd(move.to)][getPiece(move.flags) - 1] += remeniningDepth * remeniningDepth; 
+}
+
+int getHistoryHeuristic(Move move)
+{
+    return historyHeuristic[getSqInd(move.from)][getSqInd(move.to)][getPiece(move.flags) - 1];
+}
+
+void clearHistoryHeuristic()
+{
+    memset(historyHeuristic, 0, sizeof(historyHeuristic));
+}
 
 void initKillerMoves()
 {
@@ -141,15 +161,12 @@ void findKillerMoves(MoveList *moveList, int depth)
 
 void setKillerMove(Move killerMove, int depth)
 {
-    if (!getPromotionPiece(killerMove.flags) && !getCapturedPiece(killerMove.flags))
+    if (!(killerMoves[depth][0].from == killerMove.from && killerMoves[depth][0].to == killerMove.to) &&
+        !(killerMoves[depth][1].from == killerMove.from && killerMoves[depth][1].to == killerMove.to))
     {
-        if (!(killerMoves[depth][0].from == killerMove.from && killerMoves[depth][0].to == killerMove.to) &&
-            !(killerMoves[depth][1].from == killerMove.from && killerMoves[depth][1].to == killerMove.to))
-        {
-            killerMoves[depth][1] = killerMoves[depth][0];
-            killerMoves[depth][0] = killerMove;
-        } 
-    }
+        killerMoves[depth][1] = killerMoves[depth][0];
+        killerMoves[depth][0] = killerMove;
+    } 
 }
 
 int countPieces(uint64_t bitboard)
@@ -328,13 +345,13 @@ int evaluatePosition(ChessBoard* chessBoard, AttackTables* attackTables)
     score += evaluateCenter(chessBoard, white);
     score += evaluateMobility(chessBoard, attackTables, white);
     score += evaluatePawnPositioning(chessBoard, white);
-    //score += evaluateBishopPair(chessBoard, white);
+    score += evaluateBishopPair(chessBoard, white);
 
     score -= evaluateMaterial(chessBoard, black);
     score -= evaluateCenter(chessBoard, black);
     score -= evaluateMobility(chessBoard, attackTables, black);
     score -= evaluatePawnPositioning(chessBoard, black);
-    //score -= evaluateBishopPair(chessBoard, black);
+    score -= evaluateBishopPair(chessBoard, black);
 
     return score;
 }
@@ -353,6 +370,11 @@ void setBestMoveFirst(MoveList* moveList, ChessBoard* chessBoard, TranspositionT
         }
         
         if (moveList->moves[i].score > moveList->moves[moveInd].score)
+        {
+            moveInd = i;
+        }
+        
+        if (moveList->moves[moveInd].score == 0 && getHistoryHeuristic(moveList->moves[i]) > getHistoryHeuristic(moveList->moves[moveInd]))
         {
             moveInd = i;
         }
@@ -818,8 +840,27 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 
             if (alpha >= beta)
             {
-                setKillerMove(moveList.moves[i], depthSearched);
+                if (!getPromotionPiece(moveList.moves[i].flags) && !getCapturedPiece(moveList.moves[i].flags))
+                {
+                    setKillerMove(moveList.moves[i], depthSearched);
+                    updateHistoryHeuristic(moveList.moves[i], currentDepth - depthSearched);
+
+                    /*
+                    for (int moveInd = i - 1; moveInd >= 0; moveInd--)
+                    {
+                        if (moveList.moves[moveInd].score != 0)
+                        {
+                            break;
+                        }
+                        
+                        penalizeHistoryHeuristic(moveList.moves[moveInd], currentDepth - depthSearched);
+                    }
+                        */
+                }
+                
+                
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
+
                 //ASSERT_CHESS_BOARD(original, chessBoard);
                 break;
             }
@@ -961,7 +1002,24 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 
             if (alpha >= beta)
             {
-                setKillerMove(moveList.moves[i], depthSearched);
+                if (!getPromotionPiece(moveList.moves[i].flags) && !getCapturedPiece(moveList.moves[i].flags))
+                {
+                    setKillerMove(moveList.moves[i], depthSearched);
+                    updateHistoryHeuristic(moveList.moves[i], currentDepth - depthSearched);
+
+                    /*
+                    for (int moveInd = i - 1; moveInd >= 0; moveInd--)
+                    {
+                        if (moveList.moves[moveInd].score != 0)
+                        {
+                            break;
+                        }
+
+                        penalizeHistoryHeuristic(moveList.moves[moveInd], currentDepth - depthSearched);
+                    }
+                    */
+                }
+                
                 unMakeMove(chessBoard, &moveList.moves[i], hashes);
                 
                 //ASSERT_CHESS_BOARD(original, chessBoard);

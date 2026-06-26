@@ -20,7 +20,7 @@ TranspositionTableHashes* initTranpositionTableHashes()
     TranspositionTableHashes* hashes = malloc(sizeof(TranspositionTableHashes));
     hashes->colorHash = getRandomHash();
 
-    for (int piece = 0; piece < PIECE_COUNT; piece++)
+    for (int piece = 0; piece < DIFFERENT_PIECE_COUNT; piece++)
     {
         for (int sq = 0; sq < BOARD_SIZE; sq++)
         {
@@ -46,12 +46,17 @@ TranspositionTableEntry* initTranpositionTable()
 {
     TranspositionTableEntry* transpositionTable = malloc(sizeof(TranspositionTableEntry) * transpositionTableSize);
 
-    for (uint64_t i = 0; i < transpositionTableSize; i++)
-    {
-        transpositionTable->depth = -1;
-    }
+    clearTranspositionTable(transpositionTable);
     
     return transpositionTable;
+}
+
+void clearTranspositionTable(TranspositionTableEntry* transpositionTable)
+{
+    for (uint64_t i = 0; i < transpositionTableSize; i++)
+    {
+        transpositionTable[i].depth = -1;
+    }   
 }
 
 TranspositionTableEntry* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, int isEvalOnly)
