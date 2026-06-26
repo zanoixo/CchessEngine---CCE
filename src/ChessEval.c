@@ -244,6 +244,7 @@ int evaluateMobility(ChessBoard* chessBoard, AttackTables* attackTables, int isB
 int evaluatePawnPositioning(ChessBoard* chessBoard, int isBlack)
 {
     int score = 0;
+    int fileCount[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     
     if (isBlack)
     {
@@ -253,6 +254,7 @@ int evaluatePawnPositioning(ChessBoard* chessBoard, int isBlack)
         {
             int sq = getSqInd(pawns);
             score += blackPawnPosTable[sq];
+            fileCount[sq % 8]++;
             pawns &= pawns - 1;
         }   
     }
@@ -264,9 +266,15 @@ int evaluatePawnPositioning(ChessBoard* chessBoard, int isBlack)
         {
             int sq = getSqInd(pawns);
             score += whitePawnPosTable[sq];
+            fileCount[sq % 8]++;
             pawns &= pawns - 1;
         }     
     }   
+
+    for (int i = 0; i < 8; i++)
+    {
+        score -= (fileCount[i] - 1) * DOUBLED_PAWN_PENALTY;
+    }
     
     return score; 
 }
@@ -372,6 +380,7 @@ void setBestMoveFirst(MoveList* moveList, ChessBoard* chessBoard, TranspositionT
         if (moveList->moves[i].score > moveList->moves[moveInd].score)
         {
             moveInd = i;
+            continue;
         }
         
         if (moveList->moves[moveInd].score == 0 && getHistoryHeuristic(moveList->moves[i]) > getHistoryHeuristic(moveList->moves[moveInd]))
@@ -855,7 +864,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
                         
                         penalizeHistoryHeuristic(moveList.moves[moveInd], currentDepth - depthSearched);
                     }
-                        */
+                    */
                 }
                 
                 

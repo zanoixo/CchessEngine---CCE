@@ -32,6 +32,7 @@ typedef struct TranspositionTableEntry TranspositionTableEntry;
 #define ROOK_MOBILITY_VALUE 2
 #define QUEEN_MOBILITY_VALUE 1
 #define BISHOP_PAIR_VALUE 30
+#define DOUBLED_PAWN_PENALTY 15
 
 
 typedef struct MoveScore
