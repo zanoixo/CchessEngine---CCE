@@ -911,7 +911,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
 MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, int depthSearched, int alpha, int beta)
 {
     MoveScore bestMove;
-    bestMove.eval = MIN_INT - 1;
+    bestMove.eval = MIN_INT;
 
     if (depthSearched == currentDepth)
     {
@@ -1116,7 +1116,13 @@ MoveScore evaluate(ChessBoard *chessBoard, AttackTables *attackTables, Transposi
         }
         
         
-        currentDepth++;  
+        currentDepth++; 
+
+        if (currentDepth > 255)
+        {
+            break;
+        }
+        
     }
     return currentBestMove;
 }
