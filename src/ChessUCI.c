@@ -35,7 +35,7 @@ Move userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, Atta
         case 'r':
             promotionFlag |= rookPromotion;
             break;
-        case 'k':
+        case 'n':
             promotionFlag |= knightPromotion;
             break;
         case 'b':

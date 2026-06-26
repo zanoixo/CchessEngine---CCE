@@ -273,7 +273,10 @@ int evaluatePawnPositioning(ChessBoard* chessBoard, int isBlack)
 
     for (int i = 0; i < 8; i++)
     {
-        score -= (fileCount[i] - 1) * DOUBLED_PAWN_PENALTY;
+        if (fileCount[i] > 1)
+        {
+            score -= (fileCount[i] - 1) * DOUBLED_PAWN_PENALTY;
+        }  
     }
     
     return score; 
