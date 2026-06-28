@@ -11,7 +11,7 @@
 
 #define MAX_LINE 2048
 
-Move userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, AttackTables* attackTables, TranspositionTableHashes* hashes)
+void userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, AttackTables* attackTables, TranspositionTableHashes* hashes)
 {
     uint16_t promotionFlag = 0;
 
@@ -26,6 +26,8 @@ Move userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, Atta
 
     uint64_t fromBitboard = 1ULL << fromSq;
     uint64_t toBitboard = 1ULL << toSq;
+
+    uint64_t piece = getPieceFromSquare(fromBitboard, isBlack(chessBoard), chessBoard);
 
     switch (promotion)
     {
@@ -45,38 +47,48 @@ Move userMove(char* from, char* to, char promotion, ChessBoard* chessBoard, Atta
             break;
     }
 
-    MoveList* moveList = malloc(sizeof(MoveList));
-    moveList->moves = malloc(sizeof(Move) * 256);
-    moveList->nextIndex = 0;
+    MoveList moveList;
+    Move moves[256];
+    moveList.moves = moves;
+    moveList.nextIndex = 0;
 
     Move *playedMove = NULL;
 
-    generateMoves(chessBoard, attackTables, moveList);
-
-    for (int i = 0; i < moveList->nextIndex; i++)
+    switch (piece)
     {
-        if (fromBitboard == moveList->moves[i].from && toBitboard == moveList->moves[i].to && promotionFlag == (moveList->moves[i].flags & promotionPieceMask))
+        case pawn:
+            generatePawnMoves(chessBoard, attackTables, &moveList);
+            break;
+        case knight:
+            generateKnightMoves(chessBoard, attackTables, &moveList);
+            break;
+        case bishop:
+            generateBishopMoves(chessBoard, attackTables, &moveList);
+            break;
+        case rook:
+            generateRookMoves(chessBoard, attackTables, &moveList);
+            break;
+        case queen:
+            generateQueenMoves(chessBoard, attackTables, &moveList);
+            break;
+        case king:
         {
-            playedMove = &moveList->moves[i];
+            generateKingMoves(chessBoard, attackTables, &moveList);
+            generateCastleMoves(chessBoard, attackTables, &moveList);
             break;
         }
-            
     }
 
-    if (playedMove == NULL)
+    for (int i = 0; i < moveList.nextIndex; i++)
     {
-        free(moveList->moves);
-        free(moveList);
-        return *playedMove;   
+        if (fromBitboard == moveList.moves[i].from && toBitboard == moveList.moves[i].to && promotionFlag == (moveList.moves[i].flags & promotionPieceMask))
+        {
+            playedMove = &moveList.moves[i];
+            break;
+        }   
     }
-    
 
     makeMove(chessBoard, playedMove, hashes);
-
-    free(moveList->moves);
-    free(moveList);
-
-    return *playedMove;
 }
 
 void bestMove(char* moveStr, ChessBoard *ChessBoard, AttackTables *attackTables, TranspositionTableHashes* hashes, TranspositionTableEntry* transpositionTable, uint64_t timePerMove)

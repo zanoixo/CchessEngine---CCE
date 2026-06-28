@@ -2,9 +2,10 @@ import io
 import re
 import chess.pgn
 
-pgn = """ 1. e3 {+0.41/14 0.15s} d5 2. d4 {+0.17/14 0.15s} Nc6 3. Nf3 {+0.49/14 0.15s} Nf6
-4. Bb5 {+0.62/14 0.15s} Be6 5. b3 {+0.86/14 0.15s} Qd6 6. c4 {+1.61/14 0.15s}
-dxc4 7. O-O {+2.39/15 0.15s, Black disconnects} 1-0"""
+pgn = """ 1. e4 {+0.38/14 0.15s} e5 2. Nf3 {+0.24/13 0.15s} Nc6 3. Bc4 {+0.39/13 0.15s}
+Nb4 4. Nxe5 {+1.68/14 0.15s} Nxa2 5. Bxf7+ {+6.68/16 0.15s} Ke7
+6. Bxa2 {+6.84/17 0.15s} Nh6 7. d3 {+8.12/16 0.15s} Nf5
+8. O-O {+10.59/15 0.15s, Black disconnects} 1-0"""
 
 pgn = re.sub(r"\{[^}]*\}", "", pgn)
 

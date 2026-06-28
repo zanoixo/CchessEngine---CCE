@@ -1098,7 +1098,6 @@ uint8_t getPieceFromSquare(uint64_t sq, uint8_t isBlack, ChessBoard *chessBoard)
         return king;
     }
     
-
     return 0;
 }
 

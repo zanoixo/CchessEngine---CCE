@@ -101,3 +101,4 @@ uint8_t getSqInd(uint64_t sq);
 uint8_t getCapturedPiece(uint16_t flags);
 uint8_t getPromotionPiece(uint16_t flags);
 uint8_t getPiece(uint16_t flags);
+uint8_t getPieceFromSquare(uint64_t sq, uint8_t isBlack, ChessBoard *chessBoard);
