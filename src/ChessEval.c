@@ -422,67 +422,19 @@ MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Trans
     bestMove.eval = MIN_INT;
     bestMove.move = (Move){0, 0, 0, 0, 0};
 
-    TranspositionTableEntry* transpositionScore;
-    transpositionScore = getTransposition(chessBoard, transpositionTable, 0, 1);
+    TranspositionTableEntry* transpositionScore = NULL;
     //transpositionSearches++;
 
     int originalBeta = beta;
     int originalAlpha = alpha;
-    int transpositionFlag;
+
+    checkTranspositionHit(chessBoard, transpositionTable, transpositionScore, hashes, originalAlpha, originalBeta);
 
     if (transpositionScore != NULL)
     {
-        transpositionHits++;
-        if (transpositionScore->flag == alphaCutoff && transpositionScore->moveScore.eval <= alpha)
-        {
-            //transpositionCutoffs++;
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == betaCutoff && transpositionScore->moveScore.eval >= beta)
-        {
-            //transpositionCutoffs++;
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == exactCutoff)
-        {
-            //transpositionCutoffs++;
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        
+        return transpositionScore->moveScore;
     }
+    
 
     int gotChecked = isSquareAttacked(getSqInd(chessBoard->whiteKing), chessBoard, attackTables, 0);
 
@@ -601,25 +553,7 @@ MoveScore qsearchWhite(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         bestMove.eval = BLACK_MATED;
     }
 
-    
-    if (bestMove.eval >= originalBeta)
-    {
-        transpositionFlag = betaCutoff;
-    }
-    else if (bestMove.eval <= originalAlpha)
-    {
-        transpositionFlag = alphaCutoff;
-    }
-    else
-    {
-        transpositionFlag = exactCutoff;
-    }
-
-    if (bestMove.move.flags != 0)
-    {
-        setTransposition(chessBoard, transpositionTable, -1, transpositionFlag, &bestMove);
-    }
-    
+    setTransposition(chessBoard, transpositionTable, -1, &bestMove, originalAlpha, originalBeta);
 
     return bestMove;
 }
@@ -630,61 +564,16 @@ MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Trans
     bestMove.eval = MAX_INT;
     bestMove.move = (Move){0, 0, 0, 0, 0};
 
-    TranspositionTableEntry* transpositionScore;
-    transpositionScore = getTransposition(chessBoard, transpositionTable, 0, 1);
+    TranspositionTableEntry* transpositionScore = NULL;
     
     int originalBeta = beta;
     int originalAlpha = alpha;
-    int transpositionFlag;
+
+    checkTranspositionHit(chessBoard, transpositionTable, transpositionScore, hashes, originalAlpha, originalBeta);
 
     if (transpositionScore != NULL)
     {
-        if (transpositionScore->flag == alphaCutoff && transpositionScore->moveScore.eval <= alpha)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == betaCutoff && transpositionScore->moveScore.eval >= beta)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == exactCutoff)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        
+        return transpositionScore->moveScore;
     }
 
     int gotChecked = isSquareAttacked(getSqInd(chessBoard->blackKing), chessBoard, attackTables, 1);
@@ -801,25 +690,7 @@ MoveScore qsearchBlack(ChessBoard *chessBoard, AttackTables *attackTables, Trans
         bestMove.eval = WHITE_MATED;
     }
 
-    
-
-    if (bestMove.eval >= originalBeta)
-    {
-        transpositionFlag = betaCutoff;
-    }
-    else if (bestMove.eval <= originalAlpha)
-    {
-        transpositionFlag = alphaCutoff;
-    }
-    else
-    {
-        transpositionFlag = exactCutoff;
-    }
-
-    if (bestMove.move.flags != 0)
-    {
-        setTransposition(chessBoard, transpositionTable, -1, transpositionFlag, &bestMove);
-    }
+    setTransposition(chessBoard, transpositionTable, -1, &bestMove, originalAlpha, originalBeta);
     
     return bestMove;
 }
@@ -839,67 +710,20 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
     int originalAlpha = alpha;
     int originalBeta = beta;
 
-    int transpositionFlag;
-
     MoveList moveList;
     Move moves[256];
     moveList.moves = moves;
     moveList.nextIndex = 0;
 
     MoveScore moveScore;
-    TranspositionTableEntry* transpositionScore;
+    TranspositionTableEntry* transpositionScore = NULL;
     int legalMoves = 0;
 
-    transpositionScore = getTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, 0);
+    checkTranspositionHit(chessBoard, transpositionTable, transpositionScore, hashes, originalAlpha, originalBeta);
 
     if (transpositionScore != NULL)
     {
-        if (transpositionScore->flag == alphaCutoff && transpositionScore->moveScore.eval <= alpha)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == betaCutoff && transpositionScore->moveScore.eval >= beta)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == exactCutoff)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        
+        return transpositionScore->moveScore;
     }
 
     //ChessBoard* original = malloc(sizeof(ChessBoard));
@@ -1003,23 +827,7 @@ MoveScore blackMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
             bestMove.eval = DRAW;
     }
 
-    if (bestMove.eval >= originalBeta)
-    {
-        transpositionFlag = betaCutoff;
-    }
-    else if (bestMove.eval <= originalAlpha)
-    {
-        transpositionFlag = alphaCutoff;
-    }
-    else
-    {
-        transpositionFlag = exactCutoff;
-    }
-
-    if (bestMove.move.flags != 0)
-    {
-        setTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, transpositionFlag, &bestMove);
-    }
+    setTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, &bestMove, originalAlpha, originalBeta);
     
     return bestMove;
 }
@@ -1039,68 +847,20 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
     int originalAlpha = alpha;
     int originalBeta = beta;
 
-    int transpositionFlag;
-
     MoveList moveList;
     Move moves[256];
     moveList.moves = moves;
     moveList.nextIndex = 0;
 
     MoveScore moveScore;
-    TranspositionTableEntry* transpositionScore;
+    TranspositionTableEntry* transpositionScore = NULL;
     int legalMoves = 0;
 
-    transpositionScore = getTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, 0);
+   checkTranspositionHit(chessBoard, transpositionTable, transpositionScore, hashes, originalAlpha, originalBeta);
 
     if (transpositionScore != NULL)
     {
-        if (transpositionScore->flag == alphaCutoff && transpositionScore->moveScore.eval <= alpha)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-            
-        }
-        else if (transpositionScore->flag == betaCutoff && transpositionScore->moveScore.eval >= beta)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        else if (transpositionScore->flag == exactCutoff)
-        {
-            makeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            if (isThreeFoldRepetition(chessBoard))
-            {
-                bestMove.eval = DRAW;
-                bestMove.move = transpositionScore->moveScore.move;
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-            }
-            else
-            {
-                unMakeMove(chessBoard, &transpositionScore->moveScore.move, hashes);
-                return transpositionScore->moveScore;
-            }
-        }
-        
+        return transpositionScore->moveScore;
     }
 
     //ChessBoard* original = malloc(sizeof(ChessBoard));
@@ -1201,23 +961,7 @@ MoveScore whiteMove(ChessBoard *chessBoard, AttackTables *attackTables, Transpos
             bestMove.eval = DRAW;
     }
 
-    if (bestMove.eval >= originalBeta)
-    {
-        transpositionFlag = betaCutoff;
-    }
-    else if (bestMove.eval <= originalAlpha)
-    {
-        transpositionFlag = alphaCutoff;
-    }
-    else
-    {
-        transpositionFlag = exactCutoff;
-    }
-
-    if (bestMove.move.flags != 0)
-    {
-        setTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, transpositionFlag, &bestMove);
-    }
+    setTransposition(chessBoard, transpositionTable, currentDepth - depthSearched, &bestMove, originalAlpha, originalBeta);
     
     return bestMove;
 }

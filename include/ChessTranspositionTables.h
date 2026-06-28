@@ -62,4 +62,5 @@ TranspositionTableHashes* initTranpositionTableHashes();
 TranspositionTableEntry* initTranpositionTable();
 void clearTranspositionTable(TranspositionTableEntry* transpositionTable);
 TranspositionTableEntry* getTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, int isEvalOnly);
-void setTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, int flag, MoveScore* move);
+void setTransposition(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, int remainingDepth, MoveScore* moveScore, int alpha, int beta);
+void checkTranspositionHit(ChessBoard* chessBoard, TranspositionTableEntry* transpositionTable, TranspositionTableEntry* transpositionScore, TranspositionTableHashes* hashes, int alpha, int beta);
